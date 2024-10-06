@@ -16,8 +16,7 @@ application using vanilla javascript”.
 Students who do your tutorial should come away with a basic idea of the history, the problem addressed, benefits  
 and challenges, future potential/directions, and basic implementation skills
 
-![[Pasted image 20241005171626.png]]
-![[Pasted image 20241005171636.png]]
+[Bloom's Taxonomy]([url](https://uoeee.asu.edu/blooms-taxonomy))
 - learning outcomes
 
 
