@@ -1,0 +1,138 @@
+
+.pipeline-diagram {
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+    margin: 2rem auto;
+    display: block;
+    
+   
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    .pipeline-diagram {
+        background-color: #1a1a1a;
+        filter: invert(0.85) hue-rotate(180deg);
+    }
+}
+
+
+@media print {
+    .pipeline-diagram {
+        max-width: 100%;
+        box-shadow: none;
+    }
+}
+/* Stage hover effect */
+.stage-box {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.stage-box:hover {
+    transform: translateY(-5px);
+}
+
+/* Data flow animation */
+.flow-dot {
+    animation: flowMotion 3s linear infinite;
+}
+
+@keyframes flowMotion {
+    0% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(750px);
+    }
+}
+
+/* Pulse animation for stages */
+.stage-pulse {
+    animation: pulsate 2s ease-in-out infinite;
+}
+
+@keyframes pulsate {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.activity-container {
+    max-width: 800px;
+    margin: 20px auto;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  
+  .code-section {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .output-section {
+    border: 2px solid #e1e4e8;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  canvas {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .step-explanation {
+    background: #f6f8fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    line-height: 1.6;
+  }
+
+  .relative {
+    position: relative;
+  }
+  
+  .absolute {
+    position: absolute;
+  }
+
+  .code-section {
+    position: relative;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 6px 12px;
+    background-color: #4a5568;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+    background-color: #2d3748;
+}

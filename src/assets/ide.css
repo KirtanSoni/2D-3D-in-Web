@@ -1,0 +1,280 @@
+code {
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    background: #f5f5f5;
+}
+
+
+pre {
+    background: #f8f9fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    overflow: auto;
+    line-height: 1.45;
+    margin: 1em 0;
+    position: relative;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.85em;
+    white-space: pre;
+    word-break: normal;
+    word-spacing: normal;
+    tab-size: 2;
+}
+
+
+.code-with-lines {
+    counter-reset: line;
+    padding-left: 3.5em;
+}
+
+.code-with-lines code {
+    position: relative;
+    display: block;
+}
+
+.code-with-lines code::before {
+    counter-increment: line;
+    content: counter(line);
+    position: absolute;
+    left: -3em;
+    width: 2.5em;
+    text-align: right;
+    color: #6e7781;
+    padding-right: 1em;
+    border-right: 1px solid #e1e4e8;
+    user-select: none;
+}
+
+
+.code-block {
+    position: relative;
+}
+
+.code-block::before {
+    content: attr(data-language);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 8px;
+    font-size: 0.7em;
+    background: #e1e4e8;
+    color: #24292e;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+
+.theme-dark pre {
+    background: #1e1e1e;
+    border-color: #2d2d2d;
+    color: #d4d4d4;
+}
+
+.theme-dark code {
+    background: #2d2d2d;
+    color: #d4d4d4;
+}
+
+
+.token.comment { color: #6a737d; }
+.token.keyword { color: #d73a49; }
+.token.string { color: #032f62; }
+.token.number { color: #005cc5; }
+.token.function { color: #6f42c1; }
+.token.operator { color: #d73a49; }
+.token.class-name { color: #6f42c1; }
+.token.property { color: #005cc5; }
+
+
+.theme-dark .token.comment { color: #6A9955; }
+.theme-dark .token.keyword { color: #569CD6; }
+.theme-dark .token.string { color: #CE9178; }
+.theme-dark .token.number { color: #B5CEA8; }
+.theme-dark .token.function { color: #DCDCAA; }
+.theme-dark .token.operator { color: #D4D4D4; }
+.theme-dark .token.class-name { color: #4EC9B0; }
+.theme-dark .token.property { color: #9CDCFE; }
+
+
+.copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    font-size: 0.8em;
+    background: transparent;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+pre:hover .copy-button {
+    opacity: 1;
+}
+
+.copy-button:hover {
+    background: #f1f1f1;
+}
+
+.theme-dark .copy-button {
+    border-color: #2d2d2d;
+    color: #d4d4d4;
+}
+
+.theme-dark .copy-button:hover {
+    background: #2d2d2d;
+}
+
+
+
+
+.code-block-titled {
+    margin-top: 2em;
+}
+
+.code-block-title {
+    background: #f1f1f1;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    border: 1px solid #e1e4e8;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.code-block-titled pre {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+
+.terminal {
+    background: #2d2d2d;
+    color: #fff;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.terminal::before {
+    content: '';
+    display: block;
+    height: 12px;
+    width: 12px;
+    background: #ff5f56;
+    border-radius: 50%;
+    position: relative;
+    top: -8px;
+    left: -8px;
+    box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f;
+}
+
+
+pre {
+    border-radius: 6px;
+    padding: 16px;
+    overflow: auto;
+    line-height: 1.45;
+    margin: 1em 0;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+}
+
+
+.theme-github-light pre {
+    background: #f8f9fa;
+    border: 1px solid #e1e4e8;
+    color: #24292e;
+}
+
+.theme-github-light .token.comment { color: #6a737d; }
+.theme-github-light .token.keyword { color: #d73a49; }
+.theme-github-light .token.string { color: #032f62; }
+.theme-github-light .token.number { color: #005cc5; }
+.theme-github-light .token.function { color: #6f42c1; }
+.theme-github-light .token.class-name { color: #6f42c1; }
+.theme-github-light .token.property { color: #005cc5; }
+
+
+.theme-monokai pre {
+    background: #272822;
+    border: 1px solid #1d1e19;
+    color: #f8f8f2;
+}
+
+.theme-monokai .token.comment { color: #75715e; }
+.theme-monokai .token.keyword { color: #f92672; }
+.theme-monokai .token.string { color: #e6db74; }
+.theme-monokai .token.number { color: #ae81ff; }
+.theme-monokai .token.function { color: #a6e22e; }
+.theme-monokai .token.class-name { color: #a6e22e; }
+.theme-monokai .token.property { color: #66d9ef; }
+
+
+.theme-nord pre {
+    background: #2e3440;
+    border: 1px solid #3b4252;
+    color: #d8dee9;
+}
+
+.theme-nord .token.comment { color: #4c566a; }
+.theme-nord .token.keyword { color: #81a1c1; }
+.theme-nord .token.string { color: #a3be8c; }
+.theme-nord .token.number { color: #b48ead; }
+.theme-nord .token.function { color: #88c0d0; }
+.theme-nord .token.class-name { color: #8fbcbb; }
+.theme-nord .token.property { color: #d8dee9; }
+
+
+.theme-dracula pre {
+    background: #282a36;
+    border: 1px solid #44475a;
+    color: #f8f8f2;
+}
+
+.theme-dracula .token.comment { color: #6272a4; }
+.theme-dracula .token.keyword { color: #ff79c6; }
+.theme-dracula .token.string { color: #f1fa8c; }
+.theme-dracula .token.number { color: #bd93f9; }
+.theme-dracula .token.function { color: #50fa7b; }
+.theme-dracula .token.class-name { color: #8be9fd; }
+.theme-dracula .token.property { color: #f8f8f2; }
+
+
+.theme-solarized-light pre {
+    background: #fdf6e3;
+    border: 1px solid #eee8d5;
+    color: #657b83;
+}
+
+.theme-solarized-light .token.comment { color: #93a1a1; }
+.theme-solarized-light .token.keyword { color: #859900; }
+.theme-solarized-light .token.string { color: #2aa198; }
+.theme-solarized-light .token.number { color: #d33682; }
+.theme-solarized-light .token.function { color: #268bd2; }
+.theme-solarized-light .token.class-name { color: #b58900; }
+.theme-solarized-light .token.property { color: #657b83; }
+
+
+.theme-tokyo-night pre {
+    background: #1a1b26;
+    border: 1px solid #16161e;
+    color: #a9b1d6;
+}
+
+.theme-tokyo-night .token.comment { color: #565f89; }
+.theme-tokyo-night .token.keyword { color: #7dcfff; }
+.theme-tokyo-night .token.string { color: #9ece6a; }
+.theme-tokyo-night .token.number { color: #ff9e64; }
+.theme-tokyo-night .token.function { color: #7aa2f7; }
+.theme-tokyo-night .token.class-name { color: #2ac3de; }
+.theme-tokyo-night .token.property { color: #73daca; }
