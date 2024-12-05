@@ -1,11 +1,10 @@
 <script>
-  import TableofContents from './TableofContents.vue';
-  import LearningOutcomes from './LearningOutcomes.vue'
-  import LearningActivities from './LearningActivities.vue'
-  import Summary from './Summary.vue'
-  import Analysis from './Analysis.vue'
-  import References from './References.vue'
-  import Resources from './Resources.vue'
+  import LearningActivities from './LearningActivities.vue';
+import LearningOutcomes from './LearningOutcomes.vue';
+import References from './References.vue';
+import Resources from './Resources.vue';
+import Summary from './Summary.vue';
+import TableofContents from './TableofContents.vue';
 
   export default {
     name: 'Home',
@@ -14,7 +13,6 @@
       LearningOutcomes,
       LearningActivities,
       Summary,
-      Analysis,
       References,
       Resources
     },
@@ -32,7 +30,6 @@
       <LearningOutcomes />
       <LearningActivities />
       <Summary />
-      <Analysis />
       <References />
       <Resources />
     </div>

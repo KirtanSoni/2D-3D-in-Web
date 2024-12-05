@@ -1,48 +1,47 @@
 <script>
-import { onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
   name: 'NavigationBar',
   setup() {
-    const activeTab = ref('webgl');
-    const isScrolled = ref(false);
-    const hideHeader = ref(false);
-    let lastScrollY = 0;
-    
-    onMounted(() => {
-      window.addEventListener('scroll', () => {
-        isScrolled.value = window.scrollY > 0;
-        hideHeader.value = window.scrollY > 50; // Hide header after scrolling 50px
-        lastScrollY = window.scrollY;
-      });
-    });
+    const router = useRouter()
+    const route = useRoute()
+    const isScrolled = ref(false)
+    const hideHeader = ref(false)
+
+    const activeTab = computed(() => route.path.slice(1))
 
     const tabs = [
       { 
         id: 'webgl', 
+        path: '/webgl',
         label: 'WebGL', 
         description: 'Low-level 3D graphics API'
       },
       { 
         id: 'threejs', 
+        path: '/threejs',
         label: 'Three.js', 
         description: 'High-level 3D graphics library'
       },
       { 
-        id: 'babylonjs', 
+        id: 'babylonjs',
+        path: '/babylonjs', 
         label: 'Babylon.js', 
         description: 'Complete 3D engine'
       },
       {
         id: 'analysis',
+        path: '/analysis',
         label: 'Analysis & Insights',
         description: 'Comparative Analysis & Future Trends'
       }
-    ];
+    ]
 
-    const selectTab = (tabId) => {
-      activeTab.value = tabId;
-    };
+    const selectTab = (path) => {
+      router.push(path)
+    }
 
     return {
       activeTab,
@@ -50,7 +49,7 @@ export default {
       selectTab,
       isScrolled,
       hideHeader
-    };
+    }
   }
 }
 </script>
@@ -71,7 +70,7 @@ export default {
             active: activeTab === tab.id,
             'analysis-tab': tab.id === 'analysis'
           }"
-          @click="selectTab(tab.id)"
+          @click="selectTab(tab.path)"
         >
           <h3>{{ tab.label }}</h3>
           <p>{{ tab.description }}</p>

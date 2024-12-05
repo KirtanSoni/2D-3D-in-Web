@@ -1,5 +1,5 @@
 <script>
-    import webglLA from './WebGL/webglLA.vue';
+    import webglLA from './webgl/webglLA.vue';
     export default {
         name: "LearningActivities",
         components: {

@@ -16,7 +16,7 @@ export default {
     <NavigationBar />
     <main class="main-content">
       <div class="content-wrapper">
-        <Home />
+        <router-view></router-view>
       </div>
     </main>
     <footer class="footer">
