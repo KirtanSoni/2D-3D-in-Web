@@ -1,5 +1,5 @@
 <script>
-    import WebGLLA1 from './WebGLLA1.vue';
+    import WebGLBasicShapes from './WebGLBasicShapes.vue';
     export default {
         name: "LearningActivities",
         components: {
@@ -11,7 +11,7 @@
 <template>
     <div>
         <h2>Learning Activities</h2>
-        <WebGLLA1/>
+        <WebGLBasicShapes/>
     </div>
 </template>
 

@@ -1,0 +1,53 @@
+<svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Sample Image Box -->
+    <rect x="50" y="40" width="160" height="120" fill="#f8f9fa" stroke="#2d3748" stroke-width="2"/>
+    <text x="130" y="30" text-anchor="middle" font-family="Arial" font-size="14" fill="#2d3748">Sample Image</text>
+    <rect x="70" y="55" width="120" height="90" fill="#4299e1"/>
+    
+    <!-- Arrow -->
+    <path d="M 260 100 L 360 100" stroke="#2d3748" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#2d3748"/>
+        </marker>
+    </defs>
+    
+    <!-- Texture Representation -->
+    <g transform="translate(410, 40)">
+        <rect width="340" height="120" fill="#f8f9fa" stroke="#2d3748" stroke-width="2"/>
+        <text x="170" y="-10" text-anchor="middle" font-family="Arial" font-size="14" fill="#2d3748">Texture Representation</text>
+        
+        <!-- Pixel Grid -->
+        <g transform="translate(20, 15)">
+            <!-- Data values -->
+            <text x="-15" y="15" font-family="monospace" font-size="10" fill="#4a5568">R</text>
+            <text x="-15" y="35" font-family="monospace" font-size="10" fill="#4a5568">G</text>
+            <text x="-15" y="55" font-family="monospace" font-size="10" fill="#4a5568">B</text>
+            <text x="-15" y="75" font-family="monospace" font-size="10" fill="#4a5568">A</text>
+            
+            <!-- Grid with values -->
+            <g transform="translate(0, 0)">
+                <rect width="300" height="90" fill="none" stroke="#cbd5e0" stroke-width="0.5"/>
+                <!-- Grid lines -->
+                <path d="M 0 22.5 h 300 M 0 45 h 300 M 0 67.5 h 300" stroke="#cbd5e0" stroke-width="0.5"/>
+                <path d="M 60 0 v 90 M 120 0 v 90 M 180 0 v 90 M 240 0 v 90" stroke="#cbd5e0" stroke-width="0.5"/>
+                
+                <!-- Sample pixel values -->
+                <text x="20" y="15" font-family="monospace" font-size="10" fill="#2d3748">255</text>
+                <text x="20" y="35" font-family="monospace" font-size="10" fill="#2d3748">145</text>
+                <text x="20" y="55" font-family="monospace" font-size="10" fill="#2d3748">89</text>
+                <text x="20" y="75" font-family="monospace" font-size="10" fill="#2d3748">255</text>
+                
+                <text x="80" y="15" font-family="monospace" font-size="10" fill="#2d3748">234</text>
+                <text x="80" y="35" font-family="monospace" font-size="10" fill="#2d3748">167</text>
+                <text x="80" y="55" font-family="monospace" font-size="10" fill="#2d3748">98</text>
+                <text x="80" y="75" font-family="monospace" font-size="10" fill="#2d3748">255</text>
+                
+                <!-- Ellipsis to indicate continuation -->
+                <text x="140" y="45" font-family="monospace" font-size="14" fill="#2d3748">...</text>
+                <text x="200" y="45" font-family="monospace" font-size="14" fill="#2d3748">...</text>
+                <text x="260" y="45" font-family="monospace" font-size="14" fill="#2d3748">...</text>
+            </g>
+        </g>
+    </g>
+</svg>

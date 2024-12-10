@@ -18,7 +18,7 @@ export default {
   },
   data() {
     return {
-      title: '2D/3D Rendering in the web'
+      title: 'WebGL'
     }
   }
 }
