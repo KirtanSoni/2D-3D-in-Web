@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { margin: 0; background: #000; }
+        #info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        #controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        .control-group {
+            margin: 10px 0;
+        }
+        #artStyles {
+            position: fixed;
+            top: 50%;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            border-radius: 5px;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+        .style-btn {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            background: #444;
+            border: none;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .style-btn:hover {
+            background: #666;
+        }
+        .style-btn.active {
+            background: #0088ff;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        Model Info:<br>
+        Triangles: <span id="triangles">0</span><br>
+        Materials: <span id="materials">0</span><br>
+        FPS: <span id="fps">0</span>
+    </div>
+    <div id="controls">
+        <div class="control-group">
+            <label>Rotation X:</label>
+            <input type="range" id="rotationX" min="-180" max="180" value="0">
+        </div>
+        <div class="control-group">
+            <label>Rotation Y:</label>
+            <input type="range" id="rotationY" min="-180" max="180" value="0">
+        </div>
+        <div class="control-group">
+            <label>Scale:</label>
+            <input type="range" id="scale" min="1" max="200" value="100">
+        </div>
+        <div class="control-group">
+            <label>Auto Rotate:</label>
+            <input type="checkbox" id="autoRotate" checked>
+        </div>
+    </div>
+    <div id="artStyles">
+        <h3 style="margin-top: 0;">Art Styles</h3>
+        <button class="style-btn active" data-style="default">Default</button>
+        <button class="style-btn" data-style="wireframe">Wireframe</button>
+        <button class="style-btn" data-style="ascii">ASCII</button>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+        import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
+
+        let scene, camera, renderer, controls, effect;
+        let model;
+        let lastTime = performance.now();
+        let frameCount = 0;
+        let currentStyle = 'default';
+        
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Initialize ASCII effect
+            effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
+            effect.setSize(window.innerWidth, window.innerHeight);
+            effect.domElement.style.color = 'white';
+            effect.domElement.style.backgroundColor = 'black';
+            
+            // Start with regular renderer
+            document.body.appendChild(renderer.domElement);
+            
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Add lights
+            const pointLight1 = new THREE.PointLight(0xffffff, 3, 0, 0);
+            pointLight1.position.set(500, 500, 500);
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0xffffff, 1, 0, 0);
+            pointLight2.position.set(-500, -500, -500);
+            scene.add(pointLight2);
+            
+            loadModel();
+            setupControls();
+            setupArtStyles();
+            animate();
+        }
+        
+        function loadModel() {
+            const dracoLoader = new DRACOLoader();
+            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+            
+            const loader = new GLTFLoader();
+            loader.setDRACOLoader(dracoLoader);
+
+            loader.load(
+                'model.glb',
+                function(gltf) {
+                    model = gltf.scene;
+                    
+                    const box = new THREE.Box3().setFromObject(model);
+                    const center = box.getCenter(new THREE.Vector3());
+                    model.position.sub(center);
+                    
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scale = 5 / maxDim;
+                    model.position.y -= 5;
+                    model.scale.multiplyScalar(scale);
+                    model.rotation.set(Math.PI / 2, Math.PI, Math.PI);
+                    
+                    scene.add(model);
+                    updateModelInfo();
+                },
+                undefined,
+                function(error) {
+                    console.error('Error loading model:', error);
+                }
+            );
+        }
+        
+        function setupArtStyles() {
+            const buttons = document.querySelectorAll('.style-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const style = this.dataset.style;
+                    applyArtStyle(style);
+                    
+                    buttons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+        
+        function applyArtStyle(style) {
+            if (!model) return;
+            
+            // Remove existing renderer/effect
+            document.body.removeChild(
+                currentStyle === 'ascii' ? effect.domElement : renderer.domElement
+            );
+            
+            if (style === 'ascii') {
+                document.body.appendChild(effect.domElement);
+                controls = new OrbitControls(camera, effect.domElement);
+            } else {
+                document.body.appendChild(renderer.domElement);
+                controls = new OrbitControls(camera, renderer.domElement);
+            }
+            
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            model.traverse(function(child) {
+                if (child.isMesh) {
+                    if (!child.userData.originalMaterial) {
+                        child.userData.originalMaterial = child.material.clone();
+                    }
+                    
+                    switch(style) {
+                        case 'wireframe':
+                            child.material = new THREE.MeshBasicMaterial({
+                                wireframe: true,
+                                color: 0x00ff00
+                            });
+                            break;
+                        case 'ascii':
+                            child.material = new THREE.MeshPhongMaterial({ 
+                                color: 0xffffff,
+                                flatShading: true 
+                            });
+                            break;
+                        default:
+                            child.material = child.userData.originalMaterial;
+                    }
+                }
+            });
+            
+            currentStyle = style;
+        }
+        
+        function updateModelInfo() {
+            let triangleCount = 0;
+            let materialCount = 0;
+            
+            model.traverse(function(child) {
+                if(child.isMesh) {
+                    triangleCount += child.geometry.index.count / 3;
+                    materialCount += child.material.length || 1;
+                }
+            });
+            
+            document.getElementById('triangles').textContent = triangleCount;
+            document.getElementById('materials').textContent = materialCount;
+        }
+        
+        function setupControls() {
+            document.getElementById('rotationX').addEventListener('input', function(e) {
+                if(model) {
+                    model.rotation.x = THREE.MathUtils.degToRad(parseFloat(e.target.value));
+                }
+            });
+            
+            document.getElementById('rotationY').addEventListener('input', function(e) {
+                if(model) {
+                    model.rotation.y = THREE.MathUtils.degToRad(parseFloat(e.target.value));
+                }
+            });
+            
+            document.getElementById('scale').addEventListener('input', function(e) {
+                if(model) {
+                    const scale = parseFloat(e.target.value) / 100;
+                    model.scale.setScalar(scale);
+                }
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            controls.update();
+            
+            if(model && document.getElementById('autoRotate').checked) {
+                model.rotation.z += 0.005;
+                document.getElementById('rotationY').value = 
+                    THREE.MathUtils.radToDeg(model.rotation.y) % 360;
+            }
+            
+            frameCount++;
+            const currentTime = performance.now();
+            if(currentTime - lastTime >= 1000) {
+                document.getElementById('fps').textContent = frameCount;
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+            
+            if (currentStyle === 'ascii') {
+                effect.render(scene, camera);
+            } else {
+                renderer.render(scene, camera);
+            }
+        }
+        
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            effect.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        init();
+    </script>
+</body>
+</html>

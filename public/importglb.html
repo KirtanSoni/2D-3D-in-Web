@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { margin: 0; }
+        #info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: monospace;
+            display: none;
+        }
+        #controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            border-radius: 5px;
+        }
+        .control-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        Model Info:<br>
+        Triangles: <span id="triangles">0</span><br>
+        Materials: <span id="materials">0</span><br>
+        FPS: <span id="fps">0</span>
+    </div>
+    <div id="loading"></div>
+    <div id="controls">
+        <div class="control-group">
+            <label>Rotation X:</label>
+            <input type="range" id="rotationX" min="-180" max="180" value="0">
+        </div>
+        <div class="control-group">
+            <label>Rotation Y:</label>
+            <input type="range" id="rotationY" min="-180" max="180" value="0">
+        </div>
+        <div class="control-group">
+            <label>Scale:</label>
+            <input type="range" id="scale" min="1" max="200" value="100">
+        </div>
+        <div class="control-group">
+            <label>Auto Rotate:</label>
+            <input type="checkbox" id="autoRotate" checked>
+        </div>
+    </div>
+
+    <!-- Import Three.js and required addons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/DRACOLoader.js"></script>
+
+    <script>
+        let scene, camera, renderer, controls;
+        let model;
+        let lastTime = performance.now();
+        let frameCount = 0;
+        
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x333333);
+            
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            document.body.appendChild(renderer.domElement);
+            
+            // Controls setup
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Lighting setup
+            // const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            // scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+            
+            // Setup GLTF and Draco loaders
+            const dracoLoader = new THREE.DRACOLoader();
+            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+            
+            const loader = new THREE.GLTFLoader();
+            loader.setDRACOLoader(dracoLoader);
+
+            // Load sample model
+            document.getElementById('loading').style.display = 'block';
+            loader.load(
+                '/model.glb', // Replace with actual model URL
+                function(gltf) {
+                    model = gltf.scene;
+                    
+                    // Center model
+                    const box = new THREE.Box3().setFromObject(model);
+                    const center = box.getCenter(new THREE.Vector3());
+                    model.position.sub(center);
+                    
+                    // Scale model to fit view
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scale = 5 / maxDim;
+                    model.position.y -= 5;
+                    model.scale.multiplyScalar(scale);
+                    model.rotation.set(Math.PI / 2 ,Math.PI , Math.PI ); // (x, y, z) rotations 
+                    scene.add(model);
+                    
+                    // Update model info
+                    updateModelInfo();
+                    document.getElementById('loading').style.display = 'none';
+                },
+                function(xhr) {
+                    const percent = (xhr.loaded / xhr.total * 100).toFixed(1);
+           
+                },
+                function(error) {
+                    console.error('Error loading model:', error);
+                    document.getElementById('loading').textContent = 
+                        'Error loading model';
+                }
+            );
+            
+            // Setup controls
+            setupControls();
+            
+            // Start animation
+            animate();
+        }
+        
+        function updateModelInfo() {
+            let triangleCount = 0;
+            let materialCount = 0;
+            
+            model.traverse(function(child) {
+                if(child.isMesh) {
+                    triangleCount += child.geometry.index.count / 3;
+                    materialCount += child.material.length || 1;
+                }
+            });
+            
+            document.getElementById('triangles').textContent = triangleCount;
+            document.getElementById('materials').textContent = materialCount;
+        }
+        
+        function setupControls() {
+            // Rotation controls
+            document.getElementById('rotationX').addEventListener('input', function(e) {
+                if(model) {
+                    model.rotation.x = THREE.MathUtils.degToRad(parseFloat(e.target.value));
+                }
+            });
+            
+            document.getElementById('rotationY').addEventListener('input', function(e) {
+                if(model) {
+                    model.rotation.y = THREE.MathUtils.degToRad(parseFloat(e.target.value));
+                }
+            });
+            
+            // Scale control
+            document.getElementById('scale').addEventListener('input', function(e) {
+                if(model) {
+                    const scale = parseFloat(e.target.value) / 100;
+                    model.scale.setScalar(scale);
+                }
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update controls
+            controls.update();
+            
+            // Auto-rotate if enabled
+            if(model && document.getElementById('autoRotate').checked) {
+                model.rotation.z += 0.005;
+                document.getElementById('rotationY').value = 
+                    THREE.MathUtils.radToDeg(model.rotation.y) % 360;
+            }
+            
+            // Update FPS counter
+            frameCount++;
+            const currentTime = performance.now();
+            if(currentTime - lastTime >= 1000) {
+                document.getElementById('fps').textContent = frameCount;
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Three.js Component Catalog</title>
+    <style>     
+        body { margin: 0; font-family: Arial, sans-serif; }
+        .tabs-container {
+            display: grid;
+            grid-template-rows: repeat(4, auto);
+            gap: 10px;
+            padding: 10px;
+            background: #1a1a1a;
+        }
+        .tab-row {
+            display: flex;
+            gap: 5px;
+        }
+        .row-label {
+            color: white;
+            width: 100px;
+            padding: 10px;
+            background: #333;
+            display: flex;
+            align-items: center;
+        }
+        .nav-tab {
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: #444;
+            flex: 1;
+            text-align: left;
+            transition: background 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .tab-row:nth-child(1) .nav-tab.active {
+            border-left-color: #ff4444;
+            background: linear-gradient(90deg, #662222, #444);
+        }
+        .tab-row:nth-child(2) .nav-tab.active {
+            border-left-color: #44ff44;
+            background: linear-gradient(90deg, #226622, #444);
+        }
+        .tab-row:nth-child(3) .nav-tab.active {
+            border-left-color: #4444ff;
+            background: linear-gradient(90deg, #222266, #444);
+        }
+        .tab-row:nth-child(4) .nav-tab.active {
+            border-left-color: #ffff44;
+            background: linear-gradient(90deg, #666622, #444);
+        }
+        .canvas-container {
+            position: relative;
+            height: calc(100vh - 280px);
+        }
+        .labels {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="tabs-container">
+        <div class="tab-row">
+            <div class="row-label">Shapes (8)</div>
+            <button class="nav-tab active" data-type="box" data-row="0">Box</button>
+            <button class="nav-tab" data-type="sphere" data-row="0">Sphere</button>
+            <button class="nav-tab" data-type="cylinder" data-row="0">Cylinder</button>
+            <button class="nav-tab" data-type="cone" data-row="0">Cone</button>
+            <button class="nav-tab" data-type="torus" data-row="0">Torus</button>
+            <button class="nav-tab" data-type="plane" data-row="0">Plane</button>
+            <button class="nav-tab" data-type="ring" data-row="0">Ring</button>
+            <button class="nav-tab" data-type="torusKnot" data-row="0">TorusKnot</button>
+        </div>
+        <div class="tab-row">
+            <div class="row-label">Materials (6)</div>
+            <button class="nav-tab" data-type="basic" data-row="1">Basic</button>
+            <button class="nav-tab" data-type="phong" data-row="1">Phong</button>
+            <button class="nav-tab" data-type="lambert" data-row="1">Lambert</button>
+            <button class="nav-tab active" data-type="standard" data-row="1">Standard</button>
+            <button class="nav-tab" data-type="toon" data-row="1">Toon</button>
+            <button class="nav-tab" data-type="physical" data-row="1">Physical</button>
+        </div>
+        <div class="tab-row">
+            <div class="row-label">Lights (5)</div>
+            <button class="nav-tab active" data-type="ambient" data-row="2">AmbientLight</button>
+            <button class="nav-tab" data-type="point" data-row="2">PointLight</button>
+            <button class="nav-tab" data-type="directional" data-row="2">DirectionalLight</button>
+            <button class="nav-tab" data-type="spot" data-row="2">SpotLight</button>
+            <button class="nav-tab" data-type="hemisphere" data-row="2">HemisphereLight</button>
+        </div>
+        <div class="tab-row">
+            <div class="row-label">Textures (4)</div>
+            <button class="nav-tab" data-type="checkerboard" data-row="3">Checkerboard</button>
+            <button class="nav-tab" data-type="dots" data-row="3">Dots</button>
+            <button class="nav-tab" data-type="gradient" data-row="3">Gradient</button>
+            <button class="nav-tab" data-type="stripes" data-row="3">Stripes</button>
+        </div>
+    </div>
+    <div class="canvas-container">
+        <div class="labels" id="labels"></div>
+        <div id="canvas-container"></div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.157.0/build/three.module.js';
+
+        let currentScene, currentCamera, currentRenderer;
+        let currentObject, currentLight;
+        let geometries, materials, lights, textures;
+        const labelDiv = document.getElementById('labels');
+
+        function initGeometries() {
+            geometries = {
+                box: new THREE.BoxGeometry(1, 1, 1),
+                sphere: new THREE.SphereGeometry(0.7, 32, 32),
+                cylinder: new THREE.CylinderGeometry(0.5, 0.5, 1.5, 32),
+                cone: new THREE.ConeGeometry(0.7, 1.5, 32),
+                torus: new THREE.TorusGeometry(0.5, 0.2, 16, 100),
+                plane: new THREE.PlaneGeometry(1.5, 1.5),
+                ring: new THREE.RingGeometry(0.3, 0.7, 32),
+                torusKnot: new THREE.TorusKnotGeometry(0.5, 0.2, 100, 16)
+            };
+        }
+
+        function createTexture(type) {
+            const size = 512;
+            const canvas = document.createElement('canvas');
+            canvas.width = canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            switch(type) {
+                case 'checkerboard':
+                    const tileSize = size / 8;
+                    for(let i = 0; i < size; i += tileSize) {
+                        for(let j = 0; j < size; j += tileSize) {
+                            ctx.fillStyle = ((i + j) / tileSize) % 2 === 0 ? '#fff' : '#000';
+                            ctx.fillRect(i, j, tileSize, tileSize);
+                        }
+                    }
+                    break;
+                case 'dots':
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, size, size);
+                    ctx.fillStyle = '#fff';
+                    for(let i = 0; i < 50; i++) {
+                        const x = Math.random() * size;
+                        const y = Math.random() * size;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    break;
+                case 'gradient':
+                    const grad = ctx.createLinearGradient(0, 0, size, size);
+                    grad.addColorStop(0, 'red');
+                    grad.addColorStop(0.5, 'green');
+                    grad.addColorStop(1, 'blue');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, size, size);
+                    break;
+                case 'stripes':
+                    const stripeWidth = size / 10;
+                    for(let i = 0; i < size; i += stripeWidth * 2) {
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(i, 0, stripeWidth, size);
+                        ctx.fillStyle = '#000';
+                        ctx.fillRect(i + stripeWidth, 0, stripeWidth, size);
+                    }
+                    break;
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function initTextures() {
+            textures = {
+                checkerboard: createTexture('checkerboard'),
+                dots: createTexture('dots'),
+                gradient: createTexture('gradient'),
+                stripes: createTexture('stripes')
+            };
+        }
+
+        function initMaterials() {
+            materials = {
+                basic: new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+                phong: new THREE.MeshPhongMaterial({ color: 0x00ff00 }),
+                lambert: new THREE.MeshLambertMaterial({ color: 0x0000ff }),
+                standard: new THREE.MeshStandardMaterial({ 
+                    color: 0xffff00,
+                    roughness: 0.5,
+                    metalness: 0.5
+                }),
+                toon: new THREE.MeshToonMaterial({ color: 0xff00ff }),
+                physical: new THREE.MeshPhysicalMaterial({
+                    color: 0x00ffff,
+                    roughness: 0.5,
+                    metalness: 0.5,
+                    clearcoat: 1.0
+                })
+            };
+        }
+
+        function initLights() {
+            lights = {
+                ambient: new THREE.AmbientLight(0xffffff, 0.5),
+                point: new THREE.PointLight(0xffffff, 1, 100),
+                directional: new THREE.DirectionalLight(0xffffff, 1),
+                spot: new THREE.SpotLight(0xffffff, 1, 100, Math.PI / 6),
+                hemisphere: new THREE.HemisphereLight(0xffffbb, 0x080820, 1)
+            };
+        }
+
+        function setupScene() {
+            currentRenderer = new THREE.WebGLRenderer({ antialias: true });
+            currentRenderer.setSize(window.innerWidth, window.innerHeight - 280);
+            document.getElementById('canvas-container').appendChild(currentRenderer.domElement);
+
+            currentScene = new THREE.Scene();
+            currentScene.background = new THREE.Color(0x1a1a1a);
+            
+            currentCamera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight - 280), 0.1, 1000);
+            currentCamera.position.set(0, 0, 5);
+
+            const grid = new THREE.GridHelper(10, 10);
+            grid.rotation.x = Math.PI / 2;
+            currentScene.add(grid);
+
+            currentObject = new THREE.Mesh(geometries.box, materials.standard);
+            currentScene.add(currentObject);
+
+            currentLight = lights.ambient;
+            currentLight.position.set(0, 0, 5);
+            currentScene.add(currentLight);
+
+            updateLabels();
+        }
+
+        function updateLabels() {
+            const properties = {
+                geometry: currentObject.geometry.type,
+                material: currentObject.material.type,
+                light: currentLight.type,
+                position: `x: ${currentObject.position.x.toFixed(2)}, y: ${currentObject.position.y.toFixed(2)}, z: ${currentObject.position.z.toFixed(2)}`,
+                rotation: `x: ${currentObject.rotation.x.toFixed(2)}, y: ${currentObject.rotation.y.toFixed(2)}, z: ${currentObject.rotation.z.toFixed(2)}`
+            };
+
+            labelDiv.innerHTML = Object.entries(properties)
+                .map(([key, value]) => `<div>${key}: ${value}</div>`)
+                .join('');
+        }
+
+        function switchScene(type, rowIndex) {
+            // Update active tab only in the clicked row
+            document.querySelectorAll(`.tab-row:nth-child(${rowIndex + 1}) .nav-tab`).forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.type === type);
+            });
+
+            if (geometries[type]) {
+                currentObject.geometry = geometries[type];
+            } else if (materials[type]) {
+                currentObject.material = materials[type];
+            } else if (lights[type]) {
+                currentScene.remove(currentLight);
+                currentLight = lights[type];
+                currentLight.position.set(2, 2, 2);
+                currentScene.add(currentLight);
+            } else if (textures[type]) {
+                if (!currentObject.material.map) {
+                    currentObject.material = materials.standard.clone();
+                }
+                currentObject.material.map = textures[type];
+                currentObject.material.needsUpdate = true;
+            }
+            
+            updateLabels();
+        }
+
+        // Add click listeners to all buttons
+        document.querySelectorAll('.nav-tab').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const type = button.dataset.type;
+                const rowIndex = parseInt(button.dataset.row);
+                switchScene(type, rowIndex);
+            });
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (currentObject) {
+                currentObject.rotation.x += 0.01;
+                currentObject.rotation.y += 0.01;
+                updateLabels();
+            }
+            currentRenderer.render(currentScene, currentCamera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            currentCamera.aspect = window.innerWidth / (window.innerHeight - 280);
+            currentCamera.updateProjectionMatrix();
+            currentRenderer.setSize(window.innerWidth, window.innerHeight - 280);
+        });
+
+        // Initialize everything
+        initGeometries();
+        initMaterials();
+        initLights();
+        initTextures();
+        setupScene();
+        animate();
+    </script>
+</body>
+</html>
