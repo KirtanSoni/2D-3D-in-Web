@@ -9,7 +9,16 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
+    {
+      name: 'markdown-loader',
+      transform(code, id) {
+        if (id.endsWith('.md')) {
+          return `export default ${JSON.stringify(code)}`
+        }
+      }
+    }
   ],
+  assetsInclude: ['**/*.md'],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
