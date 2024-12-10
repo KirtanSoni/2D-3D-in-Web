@@ -62,8 +62,6 @@
 
 <script>
 
-import mermaid from 'mermaid'; 
-
 export default {
   name: 'ThreeJSContent'
 }
