@@ -110,10 +110,7 @@ export default {
     <div class="content-section">
       <p>Start with creating a basic scene in Babylon.js. This includes setting up the essential components: a scene, camera, light, and a basic shape.</p>
       
-      <div class="code-section">
-        <button @click="copyCode" class="copy-button">
-          {{ copyStatus }}
-        </button>
+      <div>
         <pre><code>{{ tutorial }}</code></pre>
       </div>
 

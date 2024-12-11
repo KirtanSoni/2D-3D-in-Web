@@ -120,10 +120,7 @@ export default {
     <div class="content-section">
       <p>Learn how to apply materials and textures to 3D objects using Babylon.js's PBR (Physically Based Rendering) system.</p>
       
-      <div class="code-section">
-        <button @click="copyCode" class="copy-button">
-          {{ copyStatus }}
-        </button>
+      <div>
         <pre><code>{{ tutorial }}</code></pre>
       </div>
 

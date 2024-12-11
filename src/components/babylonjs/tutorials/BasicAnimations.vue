@@ -140,10 +140,7 @@ export default {
     <div class="content-section">
       <p>Learn how to create and control animations in Babylon.js using the animation framework.</p>
       
-      <div class="code-section">
-        <button @click="copyCode" class="copy-button">
-          {{ copyStatus }}
-        </button>
+      <div>
         <pre><code>{{ tutorial }}</code></pre>
       </div>
 
