@@ -1,5 +1,7 @@
 <script>
-import ShaderCodeVisualiser from './ShaderCodeVisualiser.vue';
+import ShaderCodeVisualiser from './ShaderCodeVisualiser.vue'
+import { marked } from 'marked'
+import renderIntro from './content/2DIntro.md?raw'
 export default {
   name: 'WebGLBasicShapes',
   components: {
@@ -7,6 +9,7 @@ export default {
   },
   data() {
     return {
+      renderIntro: '',
       currentShape: 'triangle',
       gl: null,
       activeTab: 'controls',
@@ -22,6 +25,9 @@ export default {
       circleShaderProgram: null
     }
   },
+  created() {
+    this.renderIntro = marked(renderIntro)
+  },
   mounted() {
     this.initWebGL();
     this.drawShape();
@@ -32,25 +38,39 @@ export default {
     }
   },
   computed: {
-  colorRGBA() {
-    const rgb = this.hexToRGB(this.color)
-    return rgb.map(v => v.toFixed(2))
-  },
-  shapeExplanation() {
-    const explanations = {
-      triangle: "A triangle is WebGL's most basic primitive. It's defined by three vertices in counterclockwise order to ensure proper facing.",
-      square: "A square is created using two triangles via TRIANGLE_STRIP, requiring only 4 vertices instead of 6.",
-      circle: "While we could approximate a circle with many triangles, we use a more efficient fragment shader approach with just a quad (4 vertices).",
-      star: "A star shape uses TRIANGLE_FAN with alternating inner and outer radius points to create the star effect.",
-      pentagon: "Created using TRIANGLE_FAN from a center point, requiring n+2 vertices for n sides.",
-      hexagon: "Similar to pentagon, uses TRIANGLE_FAN with 8 vertices (6 sides + center and duplicate first point)."
-    }
-    return explanations[this.currentShape] || ""
-  },
-
-  vertexDefinition() {
-  const definitions = {
-    triangle: `// Define triangle vertices (counterclockwise)
+    colorRGBA() {
+      const rgb = this.hexToRGB(this.color)
+      return rgb.map(v => v.toFixed(2))
+    },
+    circleImplementation() {
+      return `// Circle fragment shader
+precision mediump float;
+uniform vec4 uColor;
+varying vec2 vPosition;
+void main() {
+  // Calculate distance from center (0,0)
+  float distance = length(vPosition);
+  // Discard fragments outside unit circle
+  if (distance > 1.0) {
+    discard;
+  }
+  gl_FragColor = uColor;
+}`
+    },
+    shapeExplanation() {
+      const explanations = {
+        triangle: "A triangle is WebGL's most basic primitive. It's defined by three vertices in counterclockwise order to ensure proper facing.",
+        square: "A square is created using two triangles via TRIANGLE_STRIP, requiring only 4 vertices instead of 6.",
+        circle: "While we could approximate a circle with many triangles, we use a more efficient fragment shader approach with just a quad (4 vertices).",
+        star: "A star shape uses TRIANGLE_FAN with alternating inner and outer radius points to create the star effect.",
+        pentagon: "Created using TRIANGLE_FAN from a center point, requiring n+2 vertices for n sides.",
+        hexagon: "Similar to pentagon, uses TRIANGLE_FAN with 8 vertices (6 sides + center and duplicate first point)."
+      }
+      return explanations[this.currentShape] || ""
+    },
+    vertexDefinition() {
+      const definitions = {
+        triangle: `// Define triangle vertices (counterclockwise)
     const vertices = new Float32Array([
       0.0,  0.5,  // top vertex
       -0.5, -0.5, // bottom left
@@ -80,99 +100,86 @@ export default {
     const vertices = createRegularPolygon(6);  // Creates 6-sided polygon
     // Center point + 6 vertices + duplicate first vertex`
       }
-  return definitions[this.currentShape] || ""
-},
-
-  drawingMethodExplanation() {
-    const methods = {
-      triangle: "TRIANGLES draws one triangle from every three vertices.",
-      square: "TRIANGLE_STRIP creates triangles from adjacent vertices, reducing vertex count.",
-      circle: "Uses a quad (TRIANGLE_STRIP) with fragment shader calculations.",
-      // Add other shapes...
-    }
-    return methods[this.currentShape] || ""
-  },
-
-  transformationCode() {
-    return `// Set transformation uniforms
+      return definitions[this.currentShape] || ""
+    },
+    drawingMethodExplanation() {
+      const methods = {
+        triangle: "TRIANGLES draws one triangle from every three vertices.",
+        square: "TRIANGLE_STRIP creates triangles from adjacent vertices, reducing vertex count.",
+        circle: "Uses a quad (TRIANGLE_STRIP) with fragment shader calculations.",
+      }
+      return methods[this.currentShape] || ""
+    },
+    transformationCode() {
+      return `// Set transformation uniforms
 gl.uniform4fv(colorLocation, [${this.colorRGBA.join(', ')}]);
 gl.uniform1f(sizeLocation, ${this.size});
 gl.uniform1f(rotationLocation, ${this.rotation.toFixed(4)});
-
 // Vertex shader transformation
 vec2 rotated = mat2(
   cos(uRotation), -sin(uRotation),
   sin(uRotation), cos(uRotation)
 ) * aVertexPosition.xy;
 gl_Position = vec4(rotated * uSize, 0.0, 1.0);`
-  },
-
-  conceptExplanation() {
-    const commonConcepts = `
+    },
+    conceptExplanation() {
+      const commonConcepts = `
 - WebGL uses normalized device coordinates (-1 to 1)
 - Vertices are processed in the order they're defined
 - Transformations are applied in vertex shader
 - Colors and other attributes can be set via uniforms
-
 Drawing Mode: ${this.getDrawingMode}
 Vertex Count: ${this.getVertexCount}
 Buffer Usage: STATIC_DRAW (for non-changing vertex data)`
-
-    return commonConcepts
-  },
-
-  drawingCode() {
-  const drawingCodes = {
-    triangle: `gl.drawArrays(gl.TRIANGLES, 0, 3);`,
-    square: `gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
-    circle: `// Using fragment shader for circle
+      return commonConcepts
+    },
+    drawingCode() {
+      const drawingCodes = {
+        triangle: `gl.drawArrays(gl.TRIANGLES, 0, 3);`,
+        square: `gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
+        circle: `// Using fragment shader for circle
 gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
-    star: `gl.drawArrays(gl.TRIANGLE_FAN, 0, 10);  // 5 points * 2 vertices`,
-    pentagon: `gl.drawArrays(gl.TRIANGLE_FAN, 0, 7);  // 5 sides + center + duplicate`,
-    hexagon: `gl.drawArrays(gl.TRIANGLE_FAN, 0, 8);  // 6 sides + center + duplicate`
-  }
-  return drawingCodes[this.currentShape] || ""
-},
-
-  getDrawingMode() {
-    const modes = {
-      triangle: 'gl.TRIANGLES',
-      square: 'gl.TRIANGLE_STRIP',
-      circle: 'gl.TRIANGLE_STRIP with fragment shader',
-      star: 'gl.TRIANGLE_FAN',
-      pentagon: 'gl.TRIANGLE_FAN',
-      hexagon: 'gl.TRIANGLE_FAN'
+        star: `gl.drawArrays(gl.TRIANGLE_FAN, 0, 10);  // 5 points * 2 vertices`,
+        pentagon: `gl.drawArrays(gl.TRIANGLE_FAN, 0, 7);  // 5 sides + center + duplicate`,
+        hexagon: `gl.drawArrays(gl.TRIANGLE_FAN, 0, 8);  // 6 sides + center + duplicate`
+      }
+      return drawingCodes[this.currentShape] || ""
+    },
+    getDrawingMode() {
+      const modes = {
+        triangle: 'gl.TRIANGLES',
+        square: 'gl.TRIANGLE_STRIP',
+        circle: 'gl.TRIANGLE_STRIP with fragment shader',
+        star: 'gl.TRIANGLE_FAN',
+        pentagon: 'gl.TRIANGLE_FAN',
+        hexagon: 'gl.TRIANGLE_FAN'
+      }
+      return modes[this.currentShape]
+    },
+    getVertexCount() {
+      const counts = {
+        triangle: '3 vertices (1 triangle)',
+        square: '4 vertices (2 triangles)',
+        circle: '4 vertices (quad)',
+        star: '12 vertices (10 triangles)',
+        pentagon: '7 vertices (5 triangles)',
+        hexagon: '8 vertices (6 triangles)'
+      }
+      return counts[this.currentShape]
     }
-    return modes[this.currentShape]
   },
-
-  getVertexCount() {
-    const counts = {
-      triangle: '3 vertices (1 triangle)',
-      square: '4 vertices (2 triangles)',
-      circle: '4 vertices (quad)',
-      star: '12 vertices (10 triangles)',
-      pentagon: '7 vertices (5 triangles)',
-      hexagon: '8 vertices (6 triangles)'
-    }
-    return counts[this.currentShape]
-  }
-},
   methods: {
     initWebGL() {
       this.canvas = this.$refs.glCanvas;
       this.gl = this.canvas.getContext('webgl');
-      
       if (!this.gl) {
         alert('WebGL not supported');
         return;
       }
-        // Regular shader program
       const vsSource = `
         attribute vec4 aVertexPosition;
         uniform float uRotation;
         uniform float uSize;
-        
         void main() {
           float s = sin(uRotation);
           float c = cos(uRotation);
@@ -188,14 +195,11 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
           gl_FragColor = uColor;
         }
       `;
-
-      // Circle shader program
       const circleVsSource = `
         attribute vec4 aVertexPosition;
         uniform float uRotation;
         uniform float uSize;
         varying vec2 vPosition;
-        
         void main() {
           float s = sin(uRotation);
           float c = cos(uRotation);
@@ -209,7 +213,6 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
         precision mediump float;
         uniform vec4 uColor;
         varying vec2 vPosition;
-        
         void main() {
           float distance = length(vPosition);
           if (distance > 1.0) {
@@ -218,23 +221,18 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
           gl_FragColor = uColor;
         }
       `;
-
-      // Initialize regular shader program
       const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vsSource);
       const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fsSource);
       this.shaderProgram = this.gl.createProgram();
       this.gl.attachShader(this.shaderProgram, vertexShader);
       this.gl.attachShader(this.shaderProgram, fragmentShader);
       this.gl.linkProgram(this.shaderProgram);
-
-      // Initialize circle shader program
       const circleVertexShader = this.createShader(this.gl.VERTEX_SHADER, circleVsSource);
       const circleFragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, circleFsSource);
       this.circleShaderProgram = this.gl.createProgram();
       this.gl.attachShader(this.circleShaderProgram, circleVertexShader);
       this.gl.attachShader(this.circleShaderProgram, circleFragmentShader);
       this.gl.linkProgram(this.circleShaderProgram);
-
       if (!this.gl.getProgramParameter(this.shaderProgram, this.gl.LINK_STATUS)) {
         alert('Unable to initialize shader program');
         return;
@@ -244,7 +242,6 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
       const shader = this.gl.createShader(type);
       this.gl.shaderSource(shader, source);
       this.gl.compileShader(shader);
-
       if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
         alert('Shader compilation error: ' + this.gl.getShaderInfoLog(shader));
         this.gl.deleteShader(shader);
@@ -253,7 +250,7 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
       return shader;
     },
     getShapeVertices(shape) {
-      switch(shape) {
+      switch (shape) {
         case 'triangle':
           return new Float32Array([
             0.0, 0.5,
@@ -274,12 +271,12 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
         case 'star':
           return this.createStar();
         case 'circle':
-        return new Float32Array([
-          -1, 1,    
-          -1, -1,   
-          1, 1,     
-          1, -1     
-        ]);
+          return new Float32Array([
+            -1, 1,
+            -1, -1,
+            1, 1,
+            1, -1
+          ]);
         default:
           return new Float32Array([]);
       }
@@ -298,12 +295,15 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
       const points = 5;
       const innerRadius = 0.25;
       const outerRadius = 0.5;
-      
-      for (let i = 0; i < points * 2; i++) {
-        const angle = (i / (points * 2)) * Math.PI * 2;
+      vertices.push(0.0);
+      vertices.push(0.0);
+      for (let i = 0; i <= points * 2; i++) {
         const radius = i % 2 === 0 ? outerRadius : innerRadius;
-        vertices.push(Math.cos(angle) * radius);
-        vertices.push(Math.sin(angle) * radius);
+        const angle = (i * Math.PI / points) - Math.PI / 2;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        vertices.push(x);
+        vertices.push(y);
       }
       return new Float32Array(vertices);
     },
@@ -316,28 +316,20 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
     drawShape() {
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
       this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-
       const vertices = this.getShapeVertices(this.currentShape);
-      
       const vertexBuffer = this.gl.createBuffer();
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
       this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
-
       this.gl.useProgram(this.shaderProgram);
-
-      // Set uniforms
       const colorLocation = this.gl.getUniformLocation(this.shaderProgram, 'uColor');
       const rotationLocation = this.gl.getUniformLocation(this.shaderProgram, 'uRotation');
       const sizeLocation = this.gl.getUniformLocation(this.shaderProgram, 'uSize');
-
       this.gl.uniform4fv(colorLocation, this.hexToRGB(this.color));
       this.gl.uniform1f(rotationLocation, this.rotation);
       this.gl.uniform1f(sizeLocation, this.size);
-
       const positionAttrib = this.gl.getAttribLocation(this.shaderProgram, 'aVertexPosition');
       this.gl.enableVertexAttribArray(positionAttrib);
       this.gl.vertexAttribPointer(positionAttrib, 2, this.gl.FLOAT, false, 0, 0);
-
       if (this.currentShape === 'square') {
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
       } else if (this.currentShape === 'circle') {
@@ -346,21 +338,17 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
         const rotationLocation = this.gl.getUniformLocation(this.circleShaderProgram, 'uRotation');
         const sizeLocation = this.gl.getUniformLocation(this.circleShaderProgram, 'uSize');
         const positionAttrib = this.gl.getAttribLocation(this.circleShaderProgram, 'aVertexPosition');
-
         this.gl.uniform4fv(colorLocation, this.hexToRGB(this.color));
         this.gl.uniform1f(rotationLocation, this.rotation);
         this.gl.uniform1f(sizeLocation, this.size);
-        
         this.gl.enableVertexAttribArray(positionAttrib);
         this.gl.vertexAttribPointer(positionAttrib, 2, this.gl.FLOAT, false, 0, 0);
-        
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
       } else if (this.currentShape === 'star') {
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, vertices.length / 2);
       } else {
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, vertices.length / 2);
       }
-
       if (this.isAnimating) {
         this.rotation += 0.01;
         this.animationId = requestAnimationFrame(this.drawShape);
@@ -393,97 +381,66 @@ gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);`,
   }
 }
 </script>
-
 <template>
-  <div class="learning-activity">
-    <h2>Drawing 2D Shapes</h2>
-    <p></p>
+  <div class="learning-activity" id="2d-rendering">
+    <div v-html="renderIntro"></div>
+    <h3>Activity 2: 2D Rendering</h3>
     <div class="interactive-demo">
       <div class="canvas-container">
         <canvas ref="glCanvas" width="400" height="400"></canvas>
       </div>
-      
       <div class="right-panel">
-        <!-- Tab Buttons -->
         <div class="tab-buttons">
-          <button 
-            @click="activeTab = 'controls'"
-            :class="{ active: activeTab === 'controls' }"
-          >
+          <button @click="activeTab = 'controls'" :class="{ active: activeTab === 'controls' }">
             Controls
           </button>
-          <button 
-            @click="activeTab = 'implementation'"
-            :class="{ active: activeTab === 'implementation' }"
-          >
+          <button @click="activeTab = 'implementation'" :class="{ active: activeTab === 'implementation' }">
             Implementation
           </button>
         </div>
-
-        <!-- Controls Tab -->
         <div v-if="activeTab === 'controls'" class="controls-section">
           <div class="control-group">
             <label>Shapes:</label>
             <div class="shape-buttons">
-              <button 
-                v-for="shape in shapes" 
-                :key="shape"
-                @click="changeShape(shape)"
-                :class="{ active: currentShape === shape }"
-              >
+              <button v-for="shape in shapes" :key="shape" @click="changeShape(shape)"
+                :class="{ active: currentShape === shape }">
                 {{ shape.charAt(0).toUpperCase() + shape.slice(1) }}
               </button>
             </div>
             <div class="code-snippet">
-              <pre><code>// Current vertices data
+              <pre><code>
 const vertices = new Float32Array([
   {{ getShapeVertices(currentShape).toString().replace(/,/g, ',\n  ') }}
 ])</code></pre>
             </div>
           </div>
-
           <div class="control-group">
             <label>Color:</label>
             <input type="color" v-model="color" @input="updateColor(color)">
             <div class="code-snippet">
-              <pre><code>// Current color value
+              <pre><code>
 gl.uniform4fv(colorLocation, [{{ hexToRGB(color).join(', ') }}])</code></pre>
             </div>
           </div>
-
           <div class="control-group">
             <label>Size (0.1 - 1.0):</label>
-            <input 
-              type="range" 
-              min="0.1" 
-              max="1.0" 
-              step="0.1" 
-              v-model="size"
-              @input="updateSize(parseFloat($event.target.value))"
-            >
+            <input type="range" min="0.1" max="1.0" step="0.1" v-model="size"
+              @input="updateSize(parseFloat($event.target.value))">
             <div class="code-snippet">
-              <pre><code>// Current size value
+              <pre><code>
 gl.uniform1f(sizeLocation, {{ size }})</code></pre>
             </div>
           </div>
-
           <div class="control-group">
             <label>Rotation (degrees):</label>
-            <input 
-              type="range" 
-              min="0" 
-              max="360" 
-              v-model="rotation"
-              @input="updateRotation(parseFloat($event.target.value))"
-            >
+            <input type="range" min="0" max="360" v-model="rotation"
+              @input="updateRotation(parseFloat($event.target.value))">
             <div class="code-snippet">
-              <pre><code>// Current rotation value
+              <pre><code>
 gl.uniform1f(rotationLocation, {{ rotation.toFixed(4) }})</code></pre>
             </div>
           </div>
         </div>
-
-        <!-- Implementation Tab -->
         <div v-else class="implementation-section">
           <div class="step">
             <h4>1. Shape Definition</h4>
@@ -492,7 +449,6 @@ gl.uniform1f(rotationLocation, {{ rotation.toFixed(4) }})</code></pre>
               <pre><code>{{ vertexDefinition }}</code></pre>
             </div>
           </div>
-
           <div class="step">
             <h4>2. Drawing Method</h4>
             <p>{{ drawingMethodExplanation }}</p>
@@ -500,7 +456,6 @@ gl.uniform1f(rotationLocation, {{ rotation.toFixed(4) }})</code></pre>
               <pre><code>{{ drawingCode }}</code></pre>
             </div>
           </div>
-
           <div class="step">
             <h4>3. Transformations</h4>
             <p>Current transformations applied:</p>
@@ -513,7 +468,6 @@ gl.uniform1f(rotationLocation, {{ rotation.toFixed(4) }})</code></pre>
               <pre><code>{{ transformationCode }}</code></pre>
             </div>
           </div>
-
           <div v-if="currentShape === 'circle'" class="step">
             <h4>Special Note on Circle Implementation</h4>
             <p>Unlike other shapes, circles use fragment shader calculations instead of many vertices:</p>
@@ -521,36 +475,35 @@ gl.uniform1f(rotationLocation, {{ rotation.toFixed(4) }})</code></pre>
               <pre><code>{{ circleImplementation }}</code></pre>
             </div>
           </div>
-
           <div class="step">
-  <h4>WebGL Concepts Used</h4>
-  <div class="concept-explanation">
-    <div class="concept-point">
-      <strong>Coordinate System</strong>
-      WebGL uses normalized device coordinates (-1 to 1)
-    </div>
-    <div class="concept-point">
-      <strong>Vertex Processing</strong>
-      Vertices are processed in the order they're defined
-    </div>
-    <div class="concept-point">
-      <strong>Transformations</strong>
-      Applied in vertex shader via matrix operations
-    </div>
-    <div class="concept-point">
-      <strong>Drawing Mode</strong>
-      {{ getDrawingMode }}
-    </div>
-    <div class="concept-point">
-      <strong>Vertex Count</strong>
-      {{ getVertexCount }}
-    </div>
-    <div class="concept-point">
-      <strong>Buffer Usage</strong>
-      STATIC_DRAW (for non-changing vertex data)
-    </div>
-  </div>
-</div>
+            <h4>WebGL Concepts Used</h4>
+            <div class="concept-explanation">
+              <div class="concept-point">
+                <strong>Coordinate System</strong>
+                WebGL uses normalized device coordinates (-1 to 1)
+              </div>
+              <div class="concept-point">
+                <strong>Vertex Processing</strong>
+                Vertices are processed in the order they're defined
+              </div>
+              <div class="concept-point">
+                <strong>Transformations</strong>
+                Applied in vertex shader via matrix operations
+              </div>
+              <div class="concept-point">
+                <strong>Drawing Mode</strong>
+                {{ getDrawingMode }}
+              </div>
+              <div class="concept-point">
+                <strong>Vertex Count</strong>
+                {{ getVertexCount }}
+              </div>
+              <div class="concept-point">
+                <strong>Buffer Usage</strong>
+                STATIC_DRAW (for non-changing vertex data)
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -567,11 +520,11 @@ gl.uniform1f(rotationLocation, {{ rotation.toFixed(4) }})</code></pre>
 .interactive-demo {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1rem;
   background: #f8f9fa;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   align-items: start;
 }
 
@@ -633,7 +586,7 @@ button:hover {
 
 button.active {
   background: #2c3e50;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 input[type="range"] {
@@ -664,48 +617,6 @@ input[type="color"] {
   border-bottom: 1px solid #dee2e6;
 }
 
-.code-content {
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-  background: #2d3748;
-  color: #e2e8f0;
-  overflow-x: auto;
-  width: 100%;
-  transition: all 0.3s ease;
-}
-
-.code-content pre {
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-}
-
-.code-content code {
-  display: block;
-  padding: 1rem;
-  white-space: pre-wrap;
-  text-align: left;
-}
-
-.code-snippet {
-  margin-top: 0.5rem;
-  background: #1a202c;
-  border-radius: 4px;
-  padding: 0.75rem;
-}
-
-.code-snippet pre {
-  margin: 0;
-}
-
-.code-snippet code {
-  color: #e2e8f0;
-  font-size: 0.85rem;
-  white-space: pre-wrap;
-}
-
 .controls-section::-webkit-scrollbar {
   width: 8px;
 }
@@ -724,7 +635,8 @@ input[type="color"] {
   background: #555;
 }
 
-h2, h3 {
+h2,
+h3 {
   color: #2c3e50;
   margin-bottom: 1.5rem;
 }
@@ -734,10 +646,6 @@ label {
   color: #4a5568;
   margin-bottom: 0.25rem;
 }
-
-.code-content .keyword { color: #ff79c6; }
-.code-content .string { color: #f1fa8c; }
-.code-content .comment { color: #6272a4; }
 
 @media (max-width: 1024px) {
   .interactive-demo {
@@ -761,30 +669,33 @@ label {
   .code-content {
     font-size: 14px;
   }
+
   .explanation-tab {
-  background: #f8fafc;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-top: 2rem;
-}
-.code-snippet {
-  margin-top: 1rem;
-  background: #1a202c;
-  border-radius: 8px;
-  overflow: hidden;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+
+  .code-snippet {
+    margin-top: 1rem;
+    background: #1a202c;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .code-snippet pre {
+    margin: 0;
+    padding: 1.5rem;
+  }
+
+  .code-snippet code {
+    font-family: 'Fira Code', monospace;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
 }
 
-.code-snippet pre {
-  margin: 0;
-  padding: 1.5rem;
-}
-
-.code-snippet code {
-  font-family: 'Fira Code', monospace;
-  color: #e2e8f0;
-  font-size: 0.9rem;
-}
-}
 .step {
   margin-bottom: 2rem;
 }
@@ -812,6 +723,7 @@ label {
   flex-direction: column;
   gap: 1.5rem;
 }
+
 .right-panel {
   display: flex;
   flex-direction: column;
@@ -834,15 +746,14 @@ label {
 .tab-buttons button.active {
   background: #fff;
   color: #2d3748;
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Add these styles */
 .implementation-section {
   background: white;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
 }
 
 .step {
@@ -881,7 +792,6 @@ label {
   margin-bottom: 1rem;
 }
 
-/* Transformations list styling */
 .step ul {
   list-style: none;
   padding: 0;
@@ -895,11 +805,12 @@ label {
   padding: 0.75rem 1rem;
   background: white;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .concept-explanation {
   display: grid;
   gap: 1rem;

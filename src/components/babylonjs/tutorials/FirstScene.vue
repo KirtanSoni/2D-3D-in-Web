@@ -105,7 +105,7 @@ export default {
 
 <template>
   <div class="tutorial-container">
-    <h4>Creating Your First Scene (30 minutes)</h4>
+    <h4>Creating Your First Scene</h4>
     
     <div class="content-section">
       <p>Start with creating a basic scene in Babylon.js. This includes setting up the essential components: a scene, camera, light, and a basic shape.</p>

@@ -115,7 +115,7 @@ export default {
 
 <template>
   <div class="tutorial-container">
-    <h4>Working with Materials and Textures (45 minutes)</h4>
+    <h4>Working with Materials and Textures</h4>
     
     <div class="content-section">
       <p>Learn how to apply materials and textures to 3D objects using Babylon.js's PBR (Physically Based Rendering) system.</p>

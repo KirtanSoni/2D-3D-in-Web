@@ -1,12 +1,13 @@
-
 <script>
 import FragmentShaderVisualiser from './FragmentShaderVisualiser.vue';
-const DEFAULT_POINTS = [[0,0], [1,0], [0.5,1]]
-
+const DEFAULT_POINTS = [[0, 0], [1, 0], [0.5, 1]]
 export default {
   name: 'ShaderCodeVisualizer',
   components: {
     FragmentShaderVisualiser
+  },
+  mounted() {
+    this.startAnimation();
   },
   data() {
     return {
@@ -70,8 +71,7 @@ export default {
     drawStep(ctx) {
       const step = this.steps[this.currentStep]
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-      
-      switch(step.animation.state) {
+      switch (step.animation.state) {
         case 'input':
           this.drawWithGrid(ctx, step.animation.points)
           break
@@ -92,31 +92,26 @@ export default {
           break
       }
     },
-
     drawGrid(ctx) {
       ctx.strokeStyle = '#e2e8f0'
       ctx.lineWidth = 0.5
-      
-      for(let i = -5; i <= 5; i++) {
+      for (let i = -5; i <= 5; i++) {
         ctx.beginPath()
         ctx.moveTo(-250, i * 50)
         ctx.lineTo(250, i * 50)
         ctx.moveTo(i * 50, -250)
         ctx.lineTo(i * 50, 250)
         ctx.stroke()
-        
-        if(i !== 0) {
+        if (i !== 0) {
           ctx.fillText(i, i * 50 - 5, 15)
           ctx.fillText(i, 5, -i * 50 + 5)
         }
       }
     },
-
     drawWithGrid(ctx, points) {
       ctx.save()
       ctx.translate(150, 150)
       this.drawGrid(ctx)
-      
       ctx.fillStyle = '#4299e1'
       points.forEach(([x, y], i) => {
         if (this.animationProgress > i * 0.3) {
@@ -128,15 +123,13 @@ export default {
       })
       ctx.restore()
     },
-
     drawAngleArc(ctx, angle) {
       ctx.save()
       ctx.translate(150, 150)
       ctx.beginPath()
-      ctx.arc(0, 0, 30, 0, -angle) 
+      ctx.arc(0, 0, 30, 0, -angle)
       ctx.strokeStyle = '#48bb78'
       ctx.stroke()
-      
       const labelAngle = -angle / 2
       const labelRadius = 45
       const labelX = Math.cos(labelAngle) * labelRadius
@@ -144,98 +137,71 @@ export default {
       ctx.fillText(`θ = ${Math.round(-angle * 180 / Math.PI)}°`, labelX, labelY)
       ctx.restore()
     },
-
     drawRotationMatrix(ctx, progress) {
-  ctx.save()
-  ctx.translate(150, 150)
-  
-  // Draw original points faded
-  ctx.globalAlpha = 0.3
-  this.drawShape(ctx, DEFAULT_POINTS)
-  
-  // Draw matrix with actual values
-  ctx.globalAlpha = progress
-  ctx.font = '16px monospace'
-  ctx.fillStyle = '#2d3748'
-  
-  // Position matrix better
-  const matrixX = -120
-  const matrixY = -50
-  
-  // Draw matrix brackets and values clearly
-  ctx.fillText('⎡  0  -1 ⎤', matrixX, matrixY)
-  ctx.fillText('⎣  1   0 ⎦', matrixX, matrixY + 25)
-  
-  // Draw transformation arrows
-  if (progress > 0.5) {
-    // Set up arrow style
-    ctx.strokeStyle = '#48bb78'
-    ctx.lineWidth = 2
-    
-    // Draw movement arrows for each point
-    DEFAULT_POINTS.forEach(([x, y]) => {
-      const startX = x * 50
-      const startY = -y * 50
-      const endX = -y * 50
-      const endY = -x * 50
-      
-      // Draw curved arrow
-      ctx.beginPath()
-      ctx.moveTo(startX, startY)
-      
-      // Make curve more circular for rotation visualization
-      const radius = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2) / 2
-      const midX = (startX + endX) / 2
-      const midY = (startY + endY) / 2
-      const controlX = midX - (endY - startY) * 0.5
-      const controlY = midY + (endX - startX) * 0.5
-      
-      ctx.quadraticCurveTo(controlX, controlY, endX, endY)
-      ctx.stroke()
-      
-      // Draw arrow head with better positioning
-      const headSize = 8
-      const angle = Math.atan2(endY - controlY, endX - controlX)
-      
-      ctx.beginPath()
-      ctx.moveTo(endX, endY)
-      ctx.lineTo(
-        endX - headSize * Math.cos(angle - Math.PI / 7),
-        endY - headSize * Math.sin(angle - Math.PI / 7)
-      )
-      ctx.moveTo(endX, endY)
-      ctx.lineTo(
-        endX - headSize * Math.cos(angle + Math.PI / 7),
-        endY - headSize * Math.sin(angle + Math.PI / 7)
-      )
-      ctx.stroke()
-    })
-  }
-  
-  ctx.restore()
-},
-
+      ctx.save()
+      ctx.translate(150, 150)
+      ctx.globalAlpha = 0.3
+      this.drawShape(ctx, DEFAULT_POINTS)
+      ctx.globalAlpha = progress
+      ctx.font = '16px monospace'
+      ctx.fillStyle = '#2d3748'
+      const matrixX = -120
+      const matrixY = -50
+      ctx.fillText('⎡  0  -1 ⎤', matrixX, matrixY)
+      ctx.fillText('⎣  1   0 ⎦', matrixX, matrixY + 25)
+      if (progress > 0.5) {
+        ctx.strokeStyle = '#48bb78'
+        ctx.lineWidth = 2
+        DEFAULT_POINTS.forEach(([x, y]) => {
+          const startX = x * 50
+          const startY = -y * 50
+          const endX = -y * 50
+          const endY = -x * 50
+          ctx.beginPath()
+          ctx.moveTo(startX, startY)
+          const radius = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2) / 2
+          const midX = (startX + endX) / 2
+          const midY = (startY + endY) / 2
+          const controlX = midX - (endY - startY) * 0.5
+          const controlY = midY + (endX - startX) * 0.5
+          ctx.quadraticCurveTo(controlX, controlY, endX, endY)
+          ctx.stroke()
+          const headSize = 8
+          const angle = Math.atan2(endY - controlY, endX - controlX)
+          ctx.beginPath()
+          ctx.moveTo(endX, endY)
+          ctx.lineTo(
+            endX - headSize * Math.cos(angle - Math.PI / 7),
+            endY - headSize * Math.sin(angle - Math.PI / 7)
+          )
+          ctx.moveTo(endX, endY)
+          ctx.lineTo(
+            endX - headSize * Math.cos(angle + Math.PI / 7),
+            endY - headSize * Math.sin(angle + Math.PI / 7)
+          )
+          ctx.stroke()
+        })
+      }
+      ctx.restore()
+    },
     drawRotatedShape(ctx, angle) {
       const transformedPoints = DEFAULT_POINTS.map(([x, y]) => {
         const cos = Math.cos(angle)
         const sin = Math.sin(angle)
         return [x * cos - y * sin, x * sin + y * cos]
       })
-      
       ctx.save()
       ctx.translate(150, 150)
       ctx.fillStyle = '#48bb78'
       this.drawShape(ctx, transformedPoints, true)
       ctx.restore()
     },
-
     drawShape(ctx, points, connect = false) {
       points.forEach(([x, y]) => {
         ctx.beginPath()
         ctx.arc(x * 50, -y * 50, 5, 0, Math.PI * 2)
         ctx.fill()
       })
-
       if (connect) {
         ctx.beginPath()
         ctx.moveTo(points[0][0] * 50, -points[0][1] * 50)
@@ -244,16 +210,13 @@ export default {
         ctx.stroke()
       }
     },
-
     drawFinalShape(ctx, progress) {
       ctx.save()
       ctx.translate(150, 150)
-      
       if (progress < 0.5) {
         this.drawGrid(ctx)
         ctx.globalAlpha = 1 - progress * 2
       }
-      
       const size = 0.8
       const angle = Math.PI / 3
       const points = DEFAULT_POINTS.map(([x, y]) => {
@@ -261,37 +224,30 @@ export default {
         const sin = Math.sin(angle)
         return [(x * cos - y * sin) * size, (x * sin + y * cos) * size]
       })
-      
       ctx.fillStyle = '#4299e1'
       ctx.globalAlpha = progress
       this.drawShape(ctx, points, true)
       ctx.restore()
     },
-
     startAnimation() {
       this.animationProgress = 0
       const startTime = performance.now()
-      
       const animate = (currentTime) => {
         this.animationProgress = Math.min((currentTime - startTime) / this.animationDuration, 1)
         this.drawStep(this.$refs.animationCanvas.getContext('2d'))
-        
         if (this.animationProgress < 1) {
           this.animationFrame = requestAnimationFrame(animate)
         }
       }
-      
       if (this.animationFrame) {
         cancelAnimationFrame(this.animationFrame)
       }
       this.animationFrame = requestAnimationFrame(animate)
     },
-
     nextStep() {
       this.currentStep = (this.currentStep + 1) % this.steps.length
       this.startAnimation()
     },
-
     prevStep() {
       this.currentStep = (this.currentStep - 1 + this.steps.length) % this.steps.length
       this.startAnimation()
@@ -299,10 +255,8 @@ export default {
   }
 }
 </script>
-
 <template>
   <div class="shader-visualizer">
-    <!-- Left side: Code with current step highlight -->
     <div class="code-panel">
       <div class="code-header">
         <h3>Vertex Shader</h3>
@@ -312,31 +266,22 @@ export default {
           <div v-for="i in 11" :key="i" class="line-number">{{ i }}</div>
         </div>
         <div class="code-lines">
-          <div 
-            v-for="(line, index) in shaderCode" 
-            :key="index"
-            class="code-line"
-            :class="{ 
-              'highlighted': steps[currentStep].lines.includes(index + 1)
-            }"
-          >{{ line }}</div>
+          <div v-for="(line, index) in shaderCode" :key="index" class="code-line" :class="{
+            'highlighted': steps[currentStep].lines.includes(index + 1)
+          }">{{ line }}</div>
         </div>
       </div>
     </div>
-
-    <!-- Right side: Explanation and animation -->
     <div class="explanation-panel">
       <div class="step-navigation">
         <button @click="prevStep" :disabled="currentStep === 0">Previous</button>
         <span>Step {{ currentStep + 1 }} of {{ steps.length }}</span>
         <button @click="nextStep" :disabled="currentStep === steps.length - 1">Next</button>
       </div>
-
       <div class="current-step">
         <h4>{{ steps[currentStep].title }}</h4>
         <p>{{ steps[currentStep].explanation }}</p>
       </div>
-
       <div class="animation-container">
         <canvas ref="animationCanvas" width="300" height="300"></canvas>
       </div>
@@ -344,7 +289,6 @@ export default {
   </div>
   <FragmentShaderVisualiser />
 </template>
-
 <style scoped>
 .shader-visualizer {
   display: grid;
@@ -355,7 +299,7 @@ export default {
   padding: 2rem;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .code-panel {
@@ -455,7 +399,7 @@ export default {
   background: #fff;
   border-radius: 8px;
   padding: 1rem;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 canvas {

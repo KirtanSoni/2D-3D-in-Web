@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Three.js Triangle</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Set up scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create triangle geometry
+        const geometry = new THREE.BufferGeometry();
+        const vertices = new Float32Array([
+            -1.0, -1.0,  0.0,  // vertex 1
+             1.0, -1.0,  0.0,  // vertex 2
+             0.0,  1.0,  0.0   // vertex 3
+        ]);
+        geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+
+        // Create material
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            side: THREE.DoubleSide
+        });
+
+        // Create mesh and add to scene
+        const triangle = new THREE.Mesh(geometry, material);
+        scene.add(triangle);
+
+        // Position camera
+        camera.position.z = 5;
+
+        // // Animation loop
+        // function animate() {
+        //     requestAnimationFrame(animate);
+            
+        //     // Rotate triangle
+        //     triangle.rotation.x += 0.01;
+        //     triangle.rotation.y += 0.01;
+            
+        //     renderer.render(scene, camera);
+        // }
+        // animate();
+        renderer.render(scene, camera);
+
+        // Handle window resizing
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+    </script>
+</body>
+</html>

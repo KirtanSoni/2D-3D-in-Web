@@ -1,4 +1,4 @@
-### Activity 3: Camera View Projection
+### Activity 3.3: Camera View Projection
 We can further extend the perspective rendering by adding a camera in the scene. The main difference between camera projection from the other two types of projection is that we will introduce view coordinates to represent what the camera is looking at any given point in time.  
 #### Step 1: Camera Setup:
 The camera needs four main directional vectors to be set up:

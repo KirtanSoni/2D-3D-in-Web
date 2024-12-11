@@ -135,7 +135,7 @@ export default {
 
 <template>
   <div class="tutorial-container">
-    <h4>Basic Animations (45 minutes)</h4>
+    <h4>Basic Animations</h4>
     
     <div class="content-section">
       <p>Learn how to create and control animations in Babylon.js using the animation framework.</p>

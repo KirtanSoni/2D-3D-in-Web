@@ -1,15 +1,29 @@
+<script>
+  import Comparison from './Comparison.vue';
+  import { marked } from 'marked';
+  import analysis from './content/comparison.md?raw'
+  export default {
+    name: 'AnalysisContent',
+    components: {
+      Comparison
+    },
+    data() {
+      return {
+        analysis: ''
+      }
+    },
+    created() {
+      this.analysis = marked(analysis)
+    }
+  }
+</script>
+
 <template>
   <div>
     <h2>Analysis & Insights</h2>
     <section>
-      <h3>Performance Comparison</h3>
-      <p>Comparative analysis of WebGL, Three.js, and Babylon.js performance metrics coming soon...</p>
+      <div v-html="analysis"></div>
+      <Comparison />
     </section>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'AnalysisContent'
-}
-</script>

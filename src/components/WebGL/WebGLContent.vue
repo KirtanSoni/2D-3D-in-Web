@@ -1,20 +1,10 @@
 <script>
-import LearningActivities from '../LearningActivities.vue'
-import LearningOutcomes from '../LearningOutcomes.vue'
-import References from '../References.vue'
-import Resources from '../Resources.vue'
-import Summary from '../Summary.vue'
-import TableofContents from '../TableofContents.vue'
+import WebGLHome from './WebGLHome.vue'
 
 export default {
   name: 'WebGLContent',
   components: {
-    TableofContents,
-    LearningOutcomes,
-    LearningActivities,
-    Summary,
-    References,
-    Resources
+    WebGLHome
   },
   data() {
     return {
@@ -27,12 +17,7 @@ export default {
 <template>
   <div class="webgl-content">
     <h1>{{ title }}</h1>
-    <TableofContents />
-    <LearningOutcomes />
-    <LearningActivities />
-    <Summary />
-    <References />
-    <Resources />
+    <WebGLHome />
   </div>
 </template>
 

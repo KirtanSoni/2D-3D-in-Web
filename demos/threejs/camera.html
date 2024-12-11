@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Three.js Stereo Camera Demo</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        #tabs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #333;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .tab {
+            padding: 8px 16px;
+            background: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .tab.active {
+            background: #007bff;
+        }
+        #info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <div id="tabs">
+        <button class="tab" onclick="switchCamera('perspective')">Perspective</button>
+        <button class="tab" onclick="switchCamera('orthographic')">Orthographic</button>
+        <button class="tab" onclick="switchCamera('arrayCamera')">Array Camera</button>
+        <button class="tab active" onclick="switchCamera('stereo')">Stereo</button>
+    </div>
+    <div id="info"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, renderer, currentCamera;
+        let perspectiveCamera, orthographicCamera, arrayCameras;
+        let stereoCamera, stereoGroup;
+        let cube;
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x222222);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Add grid helper
+            const gridHelper = new THREE.GridHelper(10, 10);
+            scene.add(gridHelper);
+
+            // Create cube
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0x00ff00,
+                flatShading: true
+            });
+            cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            setupCameras();
+            currentCamera = stereoCamera;
+            updateInfo('Stereo Camera: Simulates human binocular vision (3D effect)');
+        }
+
+        function setupCameras() {
+            // Perspective Camera
+            perspectiveCamera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            perspectiveCamera.position.set(3, 3, 3);
+            perspectiveCamera.lookAt(0, 0, 0);
+
+            // Orthographic Camera
+            const frustumSize = 5;
+            const aspect = window.innerWidth / window.innerHeight;
+            orthographicCamera = new THREE.OrthographicCamera(
+                frustumSize * aspect / -2,
+                frustumSize * aspect / 2,
+                frustumSize / 2,
+                frustumSize / -2,
+                0.1,
+                1000
+            );
+            orthographicCamera.position.set(3, 3, 3);
+            orthographicCamera.lookAt(0, 0, 0);
+
+            // Array Cameras
+            arrayCameras = [
+                new THREE.PerspectiveCamera(75, window.innerWidth / 2 / (window.innerHeight / 2), 0.1, 1000),
+                new THREE.PerspectiveCamera(75, window.innerWidth / 2 / (window.innerHeight / 2), 0.1, 1000),
+                new THREE.PerspectiveCamera(75, window.innerWidth / 2 / (window.innerHeight / 2), 0.1, 1000),
+                new THREE.PerspectiveCamera(75, window.innerWidth / 2 / (window.innerHeight / 2), 0.1, 1000)
+            ];
+            arrayCameras[0].position.set(3, 3, 3);
+            arrayCameras[1].position.set(-3, 3, 3);
+            arrayCameras[2].position.set(3, 3, -3);
+            arrayCameras[3].position.set(-3, 3, -3);
+            arrayCameras.forEach(camera => camera.lookAt(0, 0, 0));
+
+            // Stereo Camera Setup
+            stereoCamera = new THREE.StereoCamera();
+            stereoCamera.eyeSep = 0.064; // Inter-eye distance in meters
+
+            // Create a main camera for controlling stereo pair
+            stereoGroup = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            stereoGroup.position.set(0, 2, 5);
+            stereoGroup.lookAt(0, 0, 0);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+
+            if (currentCamera === arrayCameras) {
+                renderArrayCameras();
+            } else if (currentCamera === stereoCamera) {
+                renderStereoCameras();
+            } else {
+                renderer.render(scene, currentCamera);
+            }
+        }
+
+        function renderArrayCameras() {
+            const width = window.innerWidth / 2;
+            const height = window.innerHeight / 2;
+
+            arrayCameras.forEach((camera, i) => {
+                const x = (i % 2) * width;
+                const y = Math.floor(i / 2) * height;
+                
+                renderer.setViewport(x, y, width, height);
+                renderer.setScissor(x, y, width, height);
+                renderer.setScissorTest(true);
+                
+                renderer.render(scene, camera);
+            });
+        }
+
+        function renderStereoCameras() {
+            // Update the stereo camera based on the main camera
+            stereoCamera.update(stereoGroup);
+
+            const width = window.innerWidth / 2;
+            
+            // Render left eye
+            renderer.setViewport(0, 0, width, window.innerHeight);
+            renderer.setScissor(0, 0, width, window.innerHeight);
+            renderer.setScissorTest(true);
+            renderer.render(scene, stereoCamera.cameraL);
+            
+            // Render right eye
+            renderer.setViewport(width, 0, width, window.innerHeight);
+            renderer.setScissor(width, 0, width, window.innerHeight);
+            renderer.setScissorTest(true);
+            renderer.render(scene, stereoCamera.cameraR);
+        }
+
+        function switchCamera(type) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase().includes(type)) {
+                    tab.classList.add('active');
+                }
+            });
+
+            switch(type) {
+                case 'perspective':
+                    currentCamera = perspectiveCamera;
+                    updateInfo('Perspective Camera: Mimics human eye view with depth perception');
+                    break;
+                case 'orthographic':
+                    currentCamera = orthographicCamera;
+                    updateInfo('Orthographic Camera: No perspective distortion, used for 2D-like views');
+                    break;
+                case 'arrayCamera':
+                    currentCamera = arrayCameras;
+                    updateInfo('Array Camera: Multiple viewports showing different angles');
+                    break;
+                case 'stereo':
+                    currentCamera = stereoCamera;
+                    updateInfo('Stereo Camera: Simulates human binocular vision (3D effect)');
+                    break;
+            }
+
+            renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+            renderer.setScissor(0, 0, window.innerWidth, window.innerHeight);
+        }
+
+        function updateInfo(text) {
+            document.getElementById('info').textContent = text;
+        }
+
+        function onWindowResize() {
+            if (currentCamera === perspectiveCamera || currentCamera === orthographicCamera) {
+                currentCamera.aspect = window.innerWidth / window.innerHeight;
+                currentCamera.updateProjectionMatrix();
+            }
+            stereoGroup.aspect = window.innerWidth / window.innerHeight;
+            stereoGroup.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize, false);
+
+        init();
+        animate();
+    </script>
+</body>
+</html>

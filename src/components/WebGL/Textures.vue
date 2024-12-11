@@ -18,4 +18,8 @@ export default {
         <div v-html="texturesContent"></div>
     </div>
 </template>
-<style></style>
+<style>
+.container {
+    margin-top:5em;
+}
+</style>

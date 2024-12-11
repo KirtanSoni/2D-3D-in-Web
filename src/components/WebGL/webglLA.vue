@@ -1,17 +1,36 @@
 <script>
-    import WebGLBasicShapes from './WebGLBasicShapes.vue';
+import WebGLBasicShapes from './WebGLBasicShapes.vue'
+import WebGLIntroduction from './WebGLIntroduction.vue'
+import WebGLImageProcessing from './WebGLImageProcessing.vue'
+import WebGL3DBasics from './WebGL3DBasics.vue'
+import Textures from './Textures.vue'
+import Lighting from './Lighting.vue'
+import ModernFrameworks from './ModernFrameworks.vue'
+import BestPractices from './BestPractices.vue'
     export default {
-        name: "LearningActivities",
+        name: "WebGLLA",
         components: {
-            WebGLLA1
+            WebGLIntroduction,
+            WebGLImageProcessing,
+            WebGLBasicShapes,
+            WebGL3DBasics, 
+            Textures, 
+            Lighting,
+            ModernFrameworks,
+            BestPractices
         }
     }
 </script>
 
 <template>
     <div>
-        <h2>Learning Activities</h2>
-        <WebGLBasicShapes/>
+        <WebGLIntroduction />
+        <WebGLImageProcessing />
+        <WebGLBasicShapes /> 
+        <WebGL3DBasics />
+        <Textures />
+        <Lighting />
+        <ModernFrameworks />    
     </div>
 </template>
 

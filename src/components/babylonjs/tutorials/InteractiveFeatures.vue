@@ -158,7 +158,7 @@ export default {
 
 <template>
   <div class="tutorial-container">
-    <h4>Interactive Features (30 minutes)</h4>
+    <h4>Interactive Features</h4>
     
     <div class="content-section">
       <p>Learn how to add interactivity to your 3D objects using Babylon.js's Action Manager system.</p>
