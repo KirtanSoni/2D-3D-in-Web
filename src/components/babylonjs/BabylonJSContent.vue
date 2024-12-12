@@ -25,12 +25,24 @@
         <MaterialsAndTextures />
       </div>
 
+      <div class="tutorial-section" id="physics">
+        <Physics />
+      </div>
+
       <div class="tutorial-section" id="basic-animations">
         <BasicAnimations />
       </div>
 
       <div class="tutorial-section" id="interactive-features">
         <InteractiveFeatures />
+      </div>
+
+      <div class="tutorial-section" id="import-model">
+        <ImportModel />
+      </div>
+
+      <div class="tutorial-section" id="particle-system">
+        <ParticleSystem />
       </div>
     </div>
     
@@ -51,6 +63,9 @@ import BasicAnimations from './tutorials/BasicAnimations.vue';
 import InteractiveFeatures from './tutorials/InteractiveFeatures.vue';
 import SolarSystem from './demos/SolarSystem.vue';
 import BabylonLO from './BabylonLO.vue';
+import ImportModel from './tutorials/ImportModel.vue';
+import Physics from './tutorials/Physics.vue';
+import ParticleSystem from './tutorials/ParticleSystem.vue';
 
 export default {
   name: 'BabylonJSContent',
@@ -63,7 +78,10 @@ export default {
     BasicAnimations,
     InteractiveFeatures,
     SolarSystem,
-    BabylonLO
+    BabylonLO,
+    ImportModel,
+    Physics,
+    ParticleSystem
   }
 }
 </script>

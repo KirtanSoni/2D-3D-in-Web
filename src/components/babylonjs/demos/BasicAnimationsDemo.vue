@@ -29,6 +29,14 @@ export default {
       );
 
       const box = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
+
+      // Create PBR material
+      const pbr = new BABYLON.PBRMaterial("pbr", scene);
+      pbr.metallic = 0.6;
+      pbr.roughness = 0.4;
+      pbr.albedoColor = new BABYLON.Color3(0.24, 0.79, 0.24);
+
+      box.material = pbr;
       
       const animation = new BABYLON.Animation(
         "boxRotation",
