@@ -91,6 +91,9 @@ export default {
 
 <template>
     <div class="demo-container">
+      <p class="demo-instructions">
+      Click on the cubes to see what happens!
+      </p>
       <canvas ref="canvasRef"></canvas>
     </div>
 </template>

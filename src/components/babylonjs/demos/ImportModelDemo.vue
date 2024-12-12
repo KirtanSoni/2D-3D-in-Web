@@ -113,9 +113,6 @@ export default {
 
 <template>
   <div class="demo-container">
-    <p class="demo-instructions">
-      Left-click and drag the model to make it rotate. Right-click and drag to move the camera.
-    </p>
     <canvas ref="canvasRef"></canvas>
   </div>
 </template>

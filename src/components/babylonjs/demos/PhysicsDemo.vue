@@ -120,6 +120,7 @@ export default {
 
 <template>
   <div class="demo-container">
+    
     <div class="controls">
       <button @click="resetScene" class="reset-button">Reset Scene</button>
     </div>
