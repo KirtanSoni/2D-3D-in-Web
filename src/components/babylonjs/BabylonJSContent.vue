@@ -46,9 +46,8 @@
       </div>
     </div>
     
-    <section class="demo-section">
-      <h2>Final Demo: Interactive Solar System</h2>
-      <SolarSystem />
+    <section class="demo-section" id="demo">
+      <SolarSystemChallenge />
     </section>
   </div>
 </template>
@@ -66,6 +65,7 @@ import BabylonLO from './BabylonLO.vue';
 import ImportModel from './tutorials/ImportModel.vue';
 import Physics from './tutorials/Physics.vue';
 import ParticleSystem from './tutorials/ParticleSystem.vue';
+import SolarSystemChallenge from './SolarSystemChallenge.vue';
 
 export default {
   name: 'BabylonJSContent',
@@ -81,7 +81,8 @@ export default {
     BabylonLO,
     ImportModel,
     Physics,
-    ParticleSystem
+    ParticleSystem,
+    SolarSystemChallenge
   }
 }
 </script>

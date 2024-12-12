@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AnalysisContent from '../components/analysis/AnalysisContent.vue'
 import BabylonJSContent from '../components/babylonjs/BabylonJSContent.vue'
 import ThreeJSContent from '../components/threejs/ThreeJSContent.vue'
-import WebGLContent from '../components/webgl/WebGLContent.vue'
+import WebGLContent from '../components/WebGL/WebGLContent.vue'
 
 const routes = [
   {

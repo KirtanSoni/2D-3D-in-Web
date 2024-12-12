@@ -23,10 +23,19 @@ export default {
             <a href="#materials-textures">Working with Materials and Textures</a>
           </li>
           <li class="nested-item">
+            <a href="#physics">Physics with 3D Models</a>
+          </li>
+          <li class="nested-item">
             <a href="#basic-animations">Basic Animations</a>
           </li>
           <li class="nested-item">
             <a href="#interactive-features">Interactive Features</a>
+          </li>
+          <li class="nested-item">
+            <a href="#import-model">Importing 3D Models</a>
+          </li>
+          <li class="nested-item">
+            <a href="#particle-system">Creating a Particle System</a>
           </li>
         </ul>
       </li>
