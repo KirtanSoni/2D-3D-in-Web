@@ -98,6 +98,10 @@ additional training.
 
 # DEMO
 
+### How to run demos.
+- all the HTML files will work out of the box, just open them in the browser
+- .vue files are SFCs, copy-paste all the content in https://play.vuejs.org/ to run them.
+
 A demo of the technology. The demo for most project topics will be source code, though there are a few where the  
 implementation may be scripts (terminal or within a tool). The demo should be a complete implementation that is of your own  
 making. Demos that are clearly copies of something on the web with some slight modification will not be accepted and may be  
