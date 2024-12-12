@@ -26,7 +26,7 @@ export default {
     }
   },
   setup() {
-    const currentView = ref('code');
+    const currentView = ref('demo');
 
     return {
       currentView
