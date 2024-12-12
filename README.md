@@ -3,6 +3,7 @@
 
 
 Deployment : [https://ser-421.vercel.app/](https://ser-421.vercel.app/)
+Presentation Slides: [https://docs.google.com/presentation/d/1MCn5Io8svbhMfekB_kILLSDwmHj8w64BV37tZEoGA28/edit#slide=id.p]
 
 
 ref : 
