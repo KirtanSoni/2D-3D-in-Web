@@ -101,6 +101,8 @@ additional training.
 ### How to run demos.
 - all the HTML files will work out of the box, just open them in the browser
 - .vue files are SFCs, copy-paste all the content in https://play.vuejs.org/ to run them.
+- to run Babylon.js demos, copy-paste content into https://playground.babylonjs.com
+
 
 A demo of the technology. The demo for most project topics will be source code, though there are a few where the  
 implementation may be scripts (terminal or within a tool). The demo should be a complete implementation that is of your own  
