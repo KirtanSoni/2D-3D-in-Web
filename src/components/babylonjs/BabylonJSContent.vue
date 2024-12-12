@@ -25,6 +25,10 @@
         <MaterialsAndTextures />
       </div>
 
+      <div class="tutorial-section" id="physics">
+        <Physics />
+      </div>
+
       <div class="tutorial-section" id="basic-animations">
         <BasicAnimations />
       </div>
@@ -32,11 +36,30 @@
       <div class="tutorial-section" id="interactive-features">
         <InteractiveFeatures />
       </div>
+
+      <div class="tutorial-section" id="import-model">
+        <ImportModel />
+      </div>
+
+      <div class="tutorial-section" id="particle-system">
+        <ParticleSystem />
+      </div>
     </div>
     
-    <section class="demo-section">
-      <h2>Final Demo: Interactive Solar System</h2>
-      <SolarSystem />
+    <section class="demo-section" id="challenge">
+      <SolarSystemChallenge />
+    </section>
+
+    <section class="summary" id="summary">
+      <BabylonSummary />
+    </section>
+
+    <section class="references" id="references">
+      <BabylonReferences/>
+    </section>
+
+    <section class="resources" id="resources">
+      <BabylonResources />
     </section>
   </div>
 </template>
@@ -51,6 +74,13 @@ import BasicAnimations from './tutorials/BasicAnimations.vue';
 import InteractiveFeatures from './tutorials/InteractiveFeatures.vue';
 import SolarSystem from './demos/SolarSystem.vue';
 import BabylonLO from './BabylonLO.vue';
+import ImportModel from './tutorials/ImportModel.vue';
+import Physics from './tutorials/Physics.vue';
+import ParticleSystem from './tutorials/ParticleSystem.vue';
+import SolarSystemChallenge from './SolarSystemChallenge.vue';
+import BabylonSummary from './BabylonSummary.vue';
+import BabylonReferences from './BabylonReferences.vue';
+import BabylonResources from './BabylonResources.vue';
 
 export default {
   name: 'BabylonJSContent',
@@ -63,7 +93,14 @@ export default {
     BasicAnimations,
     InteractiveFeatures,
     SolarSystem,
-    BabylonLO
+    BabylonLO,
+    ImportModel,
+    Physics,
+    ParticleSystem,
+    SolarSystemChallenge,
+    BabylonSummary,
+    BabylonReferences,
+    BabylonResources
   }
 }
 </script>

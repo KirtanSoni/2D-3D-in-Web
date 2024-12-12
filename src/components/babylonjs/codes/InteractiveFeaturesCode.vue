@@ -35,7 +35,7 @@ export default {
             BABYLON.ActionManager.OnPickTrigger,
             redBox,
             'scaling',
-            new BABYLON.Vector3(1.2, 1.2, 1.2),
+            new BABYLON.Vector3(2, 2, 2),
             1000
         )
     );
@@ -46,7 +46,7 @@ export default {
             blueBox,
             'rotation.y',
             Math.PI,
-            1000
+            2000
         )
     );
     return scene;

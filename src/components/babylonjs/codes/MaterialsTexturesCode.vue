@@ -26,7 +26,7 @@ export default {
     const pbr = new BABYLON.PBRMaterial("pbr", scene);
     pbr.metallic = 0.6;
     pbr.roughness = 0.4;
-    pbr.albedoColor = new BABYLON.Color3(0.5, 0.5, 1.0);
+    pbr.albedoColor = new BABYLON.Color3(0.24, 0.79, 0.24);
     
     box.material = pbr;
     return scene;
