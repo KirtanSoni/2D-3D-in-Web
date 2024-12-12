@@ -255,7 +255,6 @@ pre {
 
 code {
   font-family: 'Fira Code', monospace;
-  color: #e2e8f0;
   font-size: 0.875rem;
   display: block;
   width: 100%;

@@ -1,28 +1,35 @@
 <template>
   <div class="babylon-content">
-    <h2>Babylon.js: Complete 3D Engine</h2>
-    
+    <h1>Babylon.js: Complete 3D Engine</h1>
+
+    <section>
+      <BabylonToC /> 
+    </section>
+
     <section class="intro-section">
-      <h2>Introduction</h2>
-      <p>Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework.</p>
+      <BabylonLO />
+    </section>
+
+    <section class="intro-section">
+      <BabylonIntroduction />
     </section>
 
     <div class="tutorials-list">
       <BabylonJSLA />
       
-      <div class="tutorial-section">
+      <div class="tutorial-section" id="first-scene">
         <FirstScene />
       </div>
 
-      <div class="tutorial-section">
+      <div class="tutorial-section" id="materials-textures">
         <MaterialsAndTextures />
       </div>
 
-      <div class="tutorial-section">
+      <div class="tutorial-section" id="basic-animations">
         <BasicAnimations />
       </div>
 
-      <div class="tutorial-section">
+      <div class="tutorial-section" id="interactive-features">
         <InteractiveFeatures />
       </div>
     </div>
@@ -36,21 +43,27 @@
 
 <script>
 import BabylonJSLA from './BabylonJSLA.vue';
+import BabylonToC from './BabylonToC.vue';
+import BabylonIntroduction from './BabylonIntroduction.vue';
 import FirstScene from './tutorials/FirstScene.vue';
 import MaterialsAndTextures from './tutorials/MaterialsAndTextures.vue';
 import BasicAnimations from './tutorials/BasicAnimations.vue';
 import InteractiveFeatures from './tutorials/InteractiveFeatures.vue';
-import SolarSystem from './SolarSystem.vue';
+import SolarSystem from './demos/SolarSystem.vue';
+import BabylonLO from './BabylonLO.vue';
 
 export default {
   name: 'BabylonJSContent',
   components: {
     BabylonJSLA,
+    BabylonToC,
+    BabylonIntroduction,
     FirstScene,
     MaterialsAndTextures,
     BasicAnimations,
     InteractiveFeatures,
-    SolarSystem
+    SolarSystem,
+    BabylonLO
   }
 }
 </script>

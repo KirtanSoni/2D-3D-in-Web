@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { 
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        #container { 
+            width: 100vw;
+            height: 100vh;
+        }
+        .interface {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background: #2196F3;
+            color: white;
+        }
+        .description {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .control-group label {
+            font-weight: bold;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="range"] {
+            flex: 1;
+        }
+        .value-display {
+            min-width: 40px;
+            text-align: right;
+            font-family: monospace;
+        }
+        h3 {
+            margin: 0 0 10px 0;
+            color: #2196F3;
+        }
+        p {
+            margin: 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div class="interface">
+        <div class="tabs">
+            <button class="tab active" data-map="normal">Normal Map</button>
+            <button class="tab" data-map="roughness">Roughness Map</button>
+            <button class="tab" data-map="metalness">Metalness Map</button>
+        </div>
+        <div id="description" class="description">
+            <h3>Normal Map</h3>
+            <p>Normal maps simulate surface detail by telling the engine how light should bounce off the surface. 
+            They create the illusion of bumps and dents without adding extra geometry.</p>
+        </div>
+        <div class="controls" id="controls">
+            <div class="control-group">
+                <label>Normal Scale X:</label>
+                <div class="slider-row">
+                    <input type="range" id="normalScaleX" min="0" max="3" step="0.1" value="1">
+                    <span class="value-display">1.0</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Normal Scale Y:</label>
+                <div class="slider-row">
+                    <input type="range" id="normalScaleY" min="0" max="3" step="0.1" value="1">
+                    <span class="value-display">1.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // [Previous JavaScript code remains exactly the same]
+        let camera, scene, renderer, sphere;
+        let currentMap = 'normal';
+        
+        const descriptions = {
+            normal: {
+                title: "Normal Map",
+                text: "Normal maps simulate surface detail by telling the engine how light should bounce off the surface. They create the illusion of bumps and dents without adding extra geometry.",
+                controls: [
+                    { id: 'normalScaleX', label: 'Normal Scale X', min: 0, max: 3, step: 0.1, value: 1 },
+                    { id: 'normalScaleY', label: 'Normal Scale Y', min: 0, max: 3, step: 0.1, value: 1 }
+                ]
+            },
+            roughness: {
+                title: "Roughness Map",
+                text: "Roughness maps control how rough or smooth a surface appears. Rough surfaces create diffuse reflections (matte), while smooth surfaces create sharp reflections (glossy).",
+                controls: [
+                    { id: 'roughness', label: 'Base Roughness', min: 0, max: 1, step: 0.1, value: 1 },
+                    { id: 'roughnessContrast', label: 'Pattern Contrast', min: 0, max: 1, step: 0.1, value: 1 }
+                ]
+            },
+            metalness: {
+                title: "Metalness Map",
+                text: "Metalness maps define which parts of a surface are metallic (1) or non-metallic (0). Metallic surfaces reflect the environment and have colored reflections.",
+                controls: [
+                    { id: 'metalness', label: 'Base Metalness', min: 0, max: 1, step: 0.1, value: 1 },
+                    { id: 'metalnessContrast', label: 'Gradient Intensity', min: 0, max: 1, step: 0.1, value: 1 }
+                ]
+            }
+        };
+
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0xffffff, 1);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            createSphere();
+            camera.position.z = 3;
+
+            setupEventListeners();
+            updateControls('normal');
+        }
+
+        function setupEventListeners() {
+            window.addEventListener('resize', onWindowResize, false);
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentMap = tab.dataset.map;
+                    updateDescription(currentMap);
+                    updateControls(currentMap);
+                    updateMaterial();
+                });
+            });
+        }
+
+        function updateDescription(mapType) {
+            const desc = descriptions[mapType];
+            document.getElementById('description').innerHTML = `
+                <h3>${desc.title}</h3>
+                <p>${desc.text}</p>
+            `;
+        }
+
+        function updateControls(mapType) {
+            const controlsContainer = document.getElementById('controls');
+            const controls = descriptions[mapType].controls;
+            
+            controlsContainer.innerHTML = controls.map(control => `
+                <div class="control-group">
+                    <label>${control.label}:</label>
+                    <div class="slider-row">
+                        <input type="range" 
+                               id="${control.id}" 
+                               min="${control.min}" 
+                               max="${control.max}" 
+                               step="${control.step}" 
+                               value="${control.value}">
+                        <span class="value-display">${control.value}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('input[type="range"]').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    e.target.nextElementSibling.textContent = parseFloat(e.target.value).toFixed(1);
+                    updateMaterial();
+                });
+            });
+        }
+
+        function createSphere() {
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const material = createMaterial('normal');
+            sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+        }
+
+        function createMaterial(type) {
+            switch(type) {
+                case 'normal': {
+                    const material = new THREE.MeshStandardMaterial({
+                        color: 0x808080,
+                        normalMap: createNormalMap(),
+                        normalScale: new THREE.Vector2(
+                            parseFloat(document.getElementById('normalScaleX')?.value || 1),
+                            parseFloat(document.getElementById('normalScaleY')?.value || 1)
+                        )
+                    });
+                    return material;
+                }
+                case 'roughness': {
+                    const roughness = parseFloat(document.getElementById('roughness')?.value || 1);
+                    const contrast = parseFloat(document.getElementById('roughnessContrast')?.value || 1);
+                    return new THREE.MeshStandardMaterial({
+                        color: 0x808080,
+                        roughnessMap: createRoughnessMap(contrast),
+                        roughness: roughness
+                    });
+                }
+                case 'metalness': {
+                    const metalness = parseFloat(document.getElementById('metalness')?.value || 1);
+                    const contrast = parseFloat(document.getElementById('metalnessContrast')?.value || 1);
+                    return new THREE.MeshStandardMaterial({
+                        color: 0x808080,
+                        metalnessMap: createMetalnessMap(contrast),
+                        metalness: metalness
+                    });
+                }
+            }
+        }
+
+        function createNormalMap() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            for(let y = 0; y < canvas.height; y++) {
+                for(let x = 0; x < canvas.width; x++) {
+                    const r = 127 + 127 * Math.sin(x / 10);
+                    const g = 127 + 127 * Math.sin(y / 10);
+                    const b = 255;
+                    ctx.fillStyle = `rgb(${r},${g},${b})`;
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        function createRoughnessMap(contrast = 1) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            const tileSize = 32;
+            for(let y = 0; y < canvas.height; y++) {
+                for(let x = 0; x < canvas.width; x++) {
+                    let value = ((Math.floor(x / tileSize) + Math.floor(y / tileSize)) % 2);
+                    value = value * contrast * 255;
+                    ctx.fillStyle = `rgb(${value},${value},${value})`;
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        function createMetalnessMap(contrast = 1) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, `rgb(${0},${0},${0})`);
+            gradient.addColorStop(1, `rgb(${255 * contrast},${255 * contrast},${255 * contrast})`);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        function updateMaterial() {
+            const newMaterial = createMaterial(currentMap);
+            sphere.material.dispose();
+            sphere.material = newMaterial;
+        }
+
+        function onWindowResize() {
+            camera.aspect = (window.innerWidth - 340) / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth - 340, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            sphere.rotation.x += 0.01;
+            sphere.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>

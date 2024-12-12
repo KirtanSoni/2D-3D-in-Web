@@ -5,116 +5,91 @@ export default {
     return {
       gl: null,
       program: null,
-      // Vertex and color data for pyramid
       positions: new Float32Array([
-        // Front
         0.0, 1.0, 0.0,
         -1.0, -1.0, 1.0,
         1.0, -1.0, 1.0,
-        // Right
         0.0, 1.0, 0.0,
         1.0, -1.0, 1.0,
         1.0, -1.0, -1.0,
-        // Back
         0.0, 1.0, 0.0,
         1.0, -1.0, -1.0,
         -1.0, -1.0, -1.0,
-        // Left
         0.0, 1.0, 0.0,
         -1.0, -1.0, -1.0,
         -1.0, -1.0, 1.0,
-        // Bottom (two triangles)
         -1.0, -1.0, 1.0,
         -1.0, -1.0, -1.0,
         1.0, -1.0, -1.0,
         -1.0, -1.0, 1.0,
         1.0, -1.0, -1.0,
         1.0, -1.0, 1.0,
-
         2.0, 1.0, 0.0,
-      1.0, -1.0, 1.0,
-      3.0, -1.0, 1.0,
-      // Right
-      2.0, 1.0, 0.0,
-      3.0, -1.0, 1.0,
-      3.0, -1.0, -1.0,
-      // Back
-      2.0, 1.0, 0.0,
-      3.0, -1.0, -1.0,
-      1.0, -1.0, -1.0,
-      // Left
-      2.0, 1.0, 0.0,
-      1.0, -1.0, -1.0,
-      1.0, -1.0, 1.0,
-      // Bottom (two triangles)
-      1.0, -1.0, 1.0,
-      1.0, -1.0, -1.0,
-      3.0, -1.0, -1.0,
-      1.0, -1.0, 1.0,
-      3.0, -1.0, -1.0,
-      3.0, -1.0, 1.0
+        1.0, -1.0, 1.0,
+        3.0, -1.0, 1.0,
+        2.0, 1.0, 0.0,
+        3.0, -1.0, 1.0,
+        3.0, -1.0, -1.0,
+        2.0, 1.0, 0.0,
+        3.0, -1.0, -1.0,
+        1.0, -1.0, -1.0,
+        2.0, 1.0, 0.0,
+        1.0, -1.0, -1.0,
+        1.0, -1.0, 1.0,
+        1.0, -1.0, 1.0,
+        1.0, -1.0, -1.0,
+        3.0, -1.0, -1.0,
+        1.0, -1.0, 1.0,
+        3.0, -1.0, -1.0,
+        3.0, -1.0, 1.0
       ]),
       colors: new Float32Array([
-        // Front - Red
         1.0, 0.0, 0.0,
         1.0, 0.0, 0.0,
         1.0, 0.0, 0.0,
-        // Right - Green
         0.0, 1.0, 0.0,
         0.0, 1.0, 0.0,
         0.0, 1.0, 0.0,
-        // Back - Blue
         0.0, 0.0, 1.0,
         0.0, 0.0, 1.0,
         0.0, 0.0, 1.0,
-        // Left - Yellow
         1.0, 1.0, 0.0,
         1.0, 1.0, 0.0,
         1.0, 1.0, 0.0,
-        // Bottom - Purple
         0.8, 0.0, 0.8,
         0.8, 0.0, 0.8,
         0.8, 0.0, 0.8,
         0.8, 0.0, 0.8,
         0.8, 0.0, 0.8,
         0.8, 0.0, 0.8,
-
         1.0, 0.0, 0.0,
-      1.0, 0.0, 0.0,
-      1.0, 0.0, 0.0,
-      // Right - Orange
-      1.0, 0.5, 0.0,
-      1.0, 0.5, 0.0,
-      1.0, 0.5, 0.0,
-      // Back - Yellow
-      1.0, 1.0, 0.0,
-      1.0, 1.0, 0.0,
-      1.0, 1.0, 0.0,
-      // Left - Red-Orange
-      1.0, 0.3, 0.0,
-      1.0, 0.3, 0.0,
-      1.0, 0.3, 0.0,
-      // Bottom - Dark Red
-      0.8, 0.1, 0.1,
-      0.8, 0.1, 0.1,
-      0.8, 0.1, 0.1,
-      0.8, 0.1, 0.1,
-      0.8, 0.1, 0.1,
-      0.8, 0.1, 0.1
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.5, 0.0,
+        1.0, 0.5, 0.0,
+        1.0, 0.5, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 0.3, 0.0,
+        1.0, 0.3, 0.0,
+        1.0, 0.3, 0.0,
+        0.8, 0.1, 0.1,
+        0.8, 0.1, 0.1,
+        0.8, 0.1, 0.1,
+        0.8, 0.1, 0.1,
+        0.8, 0.1, 0.1,
+        0.8, 0.1, 0.1
       ]),
-      // Model properties
       modelPosition: { x: 0, y: 0, z: 0 },
       modelRotation: { x: 0, y: 0, z: 0 },
-      // Camera properties
       cameraPosition: { x: 0, y: 0, z: 8 },
       cameraRotation: { x: 0, y: 0 },
       cameraTarget: { x: 0, y: 0, z: 0 },
       upVector: { x: 0, y: 1, z: 0 },
-      // Camera control properties
       isDragging: false,
       lastMouseX: 0,
       lastMouseY: 0,
-      // View properties
       fov: 60,
       near: 0.1,
       far: 100.0
@@ -144,7 +119,6 @@ export default {
         uniform mat4 viewMatrix;
         uniform mat4 perspectiveMatrix;
         varying vec3 vColor;
-        
         void main() {
           vec4 worldPos = modelMatrix * vec4(position, 1.0);
           vec4 viewPos = viewMatrix * worldPos;
@@ -153,18 +127,15 @@ export default {
         }
       `)
       this.gl.compileShader(vertexShader)
-
       const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER)
       this.gl.shaderSource(fragmentShader, `
         precision mediump float;
         varying vec3 vColor;
-        
         void main() {
           gl_FragColor = vec4(vColor, 1.0);
         }
       `)
       this.gl.compileShader(fragmentShader)
-
       this.program = this.gl.createProgram()
       this.gl.attachShader(this.program, vertexShader)
       this.gl.attachShader(this.program, fragmentShader)
@@ -175,15 +146,12 @@ export default {
       const positionBuffer = this.gl.createBuffer()
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer)
       this.gl.bufferData(this.gl.ARRAY_BUFFER, this.positions, this.gl.STATIC_DRAW)
-
       const positionLocation = this.gl.getAttribLocation(this.program, 'position')
       this.gl.enableVertexAttribArray(positionLocation)
       this.gl.vertexAttribPointer(positionLocation, 3, this.gl.FLOAT, false, 0, 0)
-
       const colorBuffer = this.gl.createBuffer()
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer)
       this.gl.bufferData(this.gl.ARRAY_BUFFER, this.colors, this.gl.STATIC_DRAW)
-
       const colorLocation = this.gl.getAttribLocation(this.program, 'color')
       this.gl.enableVertexAttribArray(colorLocation)
       this.gl.vertexAttribPointer(colorLocation, 3, this.gl.FLOAT, false, 0, 0)
@@ -201,11 +169,9 @@ export default {
       const rx = this.modelRotation.x * Math.PI / 180
       const ry = this.modelRotation.y * Math.PI / 180
       const rz = this.modelRotation.z * Math.PI / 180
-
       const cx = Math.cos(rx), sx = Math.sin(rx)
       const cy = Math.cos(ry), sy = Math.sin(ry)
       const cz = Math.cos(rz), sz = Math.sin(rz)
-
       return new Float32Array([
         cy * cz, sx * sy * cz - cx * sz, cx * sy * cz + sx * sz, 0,
         cy * sz, sx * sy * sz + cx * cz, cx * sy * sz - sx * cz, 0,
@@ -219,10 +185,8 @@ export default {
         y: this.cameraPosition.y - this.cameraTarget.y,
         z: this.cameraPosition.z - this.cameraTarget.z
       })
-
       const xAxis = this.normalize(this.crossProduct(this.upVector, zAxis))
       const yAxis = this.crossProduct(zAxis, xAxis)
-
       return new Float32Array([
         xAxis.x, yAxis.x, zAxis.x, 0,
         xAxis.y, yAxis.y, zAxis.y, 0,
@@ -256,15 +220,11 @@ export default {
       const rotationSpeed = 0.01
       this.cameraRotation.y += deltaX * rotationSpeed
       this.cameraRotation.x += deltaY * rotationSpeed
-
-      // Clamp vertical rotation
-      this.cameraRotation.x = Math.max(-Math.PI/2.1, Math.min(Math.PI/2.1, this.cameraRotation.x))
-
+      this.cameraRotation.x = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, this.cameraRotation.x))
       const radius = 5.0
       this.cameraPosition.x = radius * Math.cos(this.cameraRotation.x) * Math.sin(this.cameraRotation.y)
       this.cameraPosition.y = radius * Math.sin(this.cameraRotation.x)
       this.cameraPosition.z = radius * Math.cos(this.cameraRotation.x) * Math.cos(this.cameraRotation.y)
-
       this.render()
     },
     startDrag(event) {
@@ -278,7 +238,6 @@ export default {
       const deltaY = event.clientY - this.lastMouseY
       this.lastMouseX = event.clientX
       this.lastMouseY = event.clientY
-
       this.updateCamera(deltaX, deltaY)
     },
     stopDrag() {
@@ -286,7 +245,6 @@ export default {
     },
     render() {
       this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT)
-
       const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight
       const perspectiveMatrix = this.createPerspectiveMatrix(
         this.fov * Math.PI / 180,
@@ -296,28 +254,20 @@ export default {
       )
       const modelMatrix = this.createModelMatrix()
       const viewMatrix = this.createViewMatrix()
-
       const perspectiveLocation = this.gl.getUniformLocation(this.program, 'perspectiveMatrix')
       const modelLocation = this.gl.getUniformLocation(this.program, 'modelMatrix')
       const viewLocation = this.gl.getUniformLocation(this.program, 'viewMatrix')
-
       this.gl.uniformMatrix4fv(perspectiveLocation, false, perspectiveMatrix)
       this.gl.uniformMatrix4fv(modelLocation, false, modelMatrix)
       this.gl.uniformMatrix4fv(viewLocation, false, viewMatrix)
-
       this.gl.drawArrays(this.gl.TRIANGLES, 0, 36)
     }
   }
 }
 </script>
-
 <template>
   <div class="container">
-    <canvas ref="canvas" 
-      @mousedown="startDrag"
-      @mousemove="handleMouseMove"
-      @mouseup="stopDrag"
-      @mouseleave="stopDrag"
+    <canvas ref="canvas" @mousedown="startDrag" @mousemove="handleMouseMove" @mouseup="stopDrag" @mouseleave="stopDrag"
       width="600" height="600">
     </canvas>
     <div class="controls">
@@ -363,7 +313,6 @@ export default {
     </div>
   </div>
 </template>
-
 <style scoped>
 .container {
   display: flex;
@@ -371,7 +320,7 @@ export default {
   padding: 20px;
   align-items: flex-start;
   background-color: #f0f0f0;
-  min-height: 100vh;
+  background-color: #a2d2ff;
 }
 
 canvas {
@@ -397,7 +346,7 @@ canvas:active {
   backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }

@@ -57,7 +57,7 @@ export default {
 <template>
   <nav class="navigation" :class="{ 'is-scrolled': isScrolled }">
     <div class="nav-header" :class="{ 'header-hidden': hideHeader }">
-      <h1 class="nav-title">3D Dev Hub</h1>
+      <h1 class="nav-title">2D/ 3D Rendering in the Web</h1>
     </div>
     
     <div class="nav-container">
