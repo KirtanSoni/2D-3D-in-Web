@@ -16,10 +16,19 @@ export default {
           <span class="outcome-text">Apply Materials and Textures to 3D Objects</span>
         </li>
         <li class="outcome-item">
+          <span class="outcome-text">Add Physics to 3D Objects</span>
+        </li>
+        <li class="outcome-item">
           <span class="outcome-text">Implement Basic Animations and Transformations</span>
         </li>
         <li class="outcome-item">
           <span class="outcome-text">Add Interactive Features to 3D Objects</span>
+        </li>
+        <li class="outcome-item">
+          <span class="outcome-text">Importing a 3D model into the scene</span>
+        </li>
+        <li class="outcome-item">
+          <span class="outcome-text">Creating a Particle System</span>
         </li>
         <!-- <li class="outcome-item">
           <span class="outcome-text">Build a Complete Interactive Solar System Demo</span>
