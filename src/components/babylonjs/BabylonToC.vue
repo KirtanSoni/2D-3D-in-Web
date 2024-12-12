@@ -11,6 +11,9 @@ export default {
         <a href="#learning-outcomes">Learning Outcomes</a>
       </li>
       <li class="toc-item">
+        <a href="#intro">Introduction</a>
+      </li>
+      <li class="toc-item">
         <a href="#learning-activities">Learning Activities</a>
         <ul class="nested-list">
           <li class="nested-item">
@@ -51,7 +54,6 @@ export default {
 
 .toc-title {
   color: #2d3748;
-  font-size: 1.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
   position: relative;
