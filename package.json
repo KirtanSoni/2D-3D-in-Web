@@ -9,11 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-<<<<<<< HEAD
     "babylonjs": "^7.39.1",
-=======
     "marked": "^15.0.3",
->>>>>>> f7eae1c855aa9f140265b19b5a7a7919d3399201
     "vue": "^3.5.12",
     "vue-router": "^4.5.0"
   },
