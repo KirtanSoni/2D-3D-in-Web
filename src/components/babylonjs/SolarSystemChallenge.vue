@@ -96,10 +96,10 @@ export default {
 
 .hints-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Fixed 2-column layout */
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 30px;
-  max-width: 1200px; /* Added to ensure grid doesn't stretch too wide */
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -143,7 +143,7 @@ export default {
 
 @media (max-width: 768px) {
   .hints-grid {
-    grid-template-columns: 1fr; /* Stack cards vertically on mobile */
+    grid-template-columns: 1fr;
   }
 }
 </style>
