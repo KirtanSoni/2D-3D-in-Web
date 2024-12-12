@@ -49,7 +49,7 @@ import FirstScene from './tutorials/FirstScene.vue';
 import MaterialsAndTextures from './tutorials/MaterialsAndTextures.vue';
 import BasicAnimations from './tutorials/BasicAnimations.vue';
 import InteractiveFeatures from './tutorials/InteractiveFeatures.vue';
-import SolarSystem from './SolarSystem.vue';
+import SolarSystem from './demos/SolarSystem.vue';
 import BabylonLO from './BabylonLO.vue';
 
 export default {

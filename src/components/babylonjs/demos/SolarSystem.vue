@@ -125,7 +125,7 @@ export default {
         tessellation: 32
       }, scene);
       rings.parent = planets.saturn;
-      rings.rotation.x = Math.PI / 2;
+      rings.rotation.x = Math.PI / 3;
 
       // Animation
       scene.onBeforeRenderObservable.add(() => {
