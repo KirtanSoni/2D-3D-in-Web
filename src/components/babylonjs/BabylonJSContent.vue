@@ -46,8 +46,20 @@
       </div>
     </div>
     
-    <section class="demo-section" id="demo">
+    <section class="demo-section" id="challenge">
       <SolarSystemChallenge />
+    </section>
+
+    <section class="summary" id="summary">
+      <BabylonSummary />
+    </section>
+
+    <section class="references" id="references">
+      <BabylonReferences/>
+    </section>
+
+    <section class="resources" id="resources">
+      <BabylonResources />
     </section>
   </div>
 </template>
@@ -66,6 +78,9 @@ import ImportModel from './tutorials/ImportModel.vue';
 import Physics from './tutorials/Physics.vue';
 import ParticleSystem from './tutorials/ParticleSystem.vue';
 import SolarSystemChallenge from './SolarSystemChallenge.vue';
+import BabylonSummary from './BabylonSummary.vue';
+import BabylonReferences from './BabylonReferences.vue';
+import BabylonResources from './BabylonResources.vue';
 
 export default {
   name: 'BabylonJSContent',
@@ -82,7 +97,10 @@ export default {
     ImportModel,
     Physics,
     ParticleSystem,
-    SolarSystemChallenge
+    SolarSystemChallenge,
+    BabylonSummary,
+    BabylonReferences,
+    BabylonResources
   }
 }
 </script>

@@ -12,10 +12,9 @@ export default {
 <template>
   <div class="challenge-container">
     <div class="challenge-intro">
-      <h2>Final Challenge: Interactive Solar System</h2>
-      <p>Now that you've learned the fundamentals of Babylon.js, try to recreate this interactive solar system! This project combines everything we've covered in the previous tutorials.</p>
+      <h2>Challenge: Solar System</h2>
+      <p>Now that you've learned the fundamentals of Babylon.js, try to recreate this solar system! This project combines everything we've covered in the previous tutorials, and also adds few new topics.</p>
     </div>
-
     <div class="challenge-requirements">
       <h3>Key Requirements:</h3>
       <ul>
@@ -27,6 +26,11 @@ export default {
         <li>Create a starfield background using a skybox and dynamic texture</li>
         <li>Add Saturn's rings using a torus geometry</li>
       </ul>
+    </div>
+
+    <div class="challenge-demo">
+      <h3>Reference Implementation:</h3>
+      <SolarSystem />
     </div>
 
     <div class="implementation-hints">
@@ -68,11 +72,6 @@ export default {
           </ul>
         </div>
       </div>
-    </div>
-
-    <div class="challenge-demo">
-      <h3>Reference Implementation:</h3>
-      <SolarSystem />
     </div>
   </div>
 </template>

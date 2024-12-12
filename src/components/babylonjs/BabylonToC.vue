@@ -40,6 +40,9 @@ export default {
         </ul>
       </li>
       <li class="toc-item">
+        <a href="#challenge">Challenge: Solar System</a>
+      </li>
+      <li class="toc-item">
         <a href="#summary">Summary</a>
       </li>
       <li class="toc-item">
